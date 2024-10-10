@@ -1,4 +1,4 @@
-package com.tdd.ecommerce.balance;
+package com.tdd.ecommerce.balance.controller;
 
 
 import com.tdd.ecommerce.balance.dto.ChargeRequest;

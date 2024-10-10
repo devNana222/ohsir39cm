@@ -1,4 +1,4 @@
-package com.tdd.ecommerce.product;
+package com.tdd.ecommerce.product.controller;
 
 import com.tdd.ecommerce.product.dto.ProductInfo;
 import org.springframework.http.ResponseEntity;

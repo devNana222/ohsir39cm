@@ -1,8 +1,7 @@
-package com.tdd.ecommerce.cart;
+package com.tdd.ecommerce.cart.controller;
 
 import com.tdd.ecommerce.cart.dto.Cart;
 import com.tdd.ecommerce.order.dto.OrderItem;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

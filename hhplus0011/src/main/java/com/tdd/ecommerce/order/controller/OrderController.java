@@ -1,4 +1,4 @@
-package com.tdd.ecommerce.order;
+package com.tdd.ecommerce.order.controller;
 
 import com.tdd.ecommerce.order.dto.OrderItem;
 import org.springframework.http.ResponseEntity;

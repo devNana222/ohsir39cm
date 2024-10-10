@@ -1,6 +1,5 @@
-package com.tdd.ecommerce.product;
+package com.tdd.ecommerce.product.controller;
 
-import com.tdd.ecommerce.cart.dto.Cart;
 import com.tdd.ecommerce.order.dto.OrderHistory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
