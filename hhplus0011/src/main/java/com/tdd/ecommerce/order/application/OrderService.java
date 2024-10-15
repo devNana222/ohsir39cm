@@ -76,11 +76,14 @@ public class OrderService {
         updateProductInventory(orders);
 
         //결제 성공 시 주문 정보 데이터 플랫폼에 전송
-        fakePGService.sendOrderToDataPlatform(orders);
+        if(fakePGService.sendOrderToDataPlatform(orders)) {
 
-        List<OrderServiceResponse> response = createOrderResponse(newOrder.getOrderId(), customerId, customer.getBalance(), orders);
+            List<OrderServiceResponse> response = createOrderResponse(newOrder.getOrderId(), customerId, customer.getBalance(), orders);
 
-        return response;
+            return response;
+        }
+        else
+            return Collections.emptyList();
     }
 
     private boolean isEnoughBalance(Long customerId, Long requiredBalance){
