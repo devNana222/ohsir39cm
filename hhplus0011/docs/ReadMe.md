@@ -26,7 +26,7 @@
 CREATE TABLE customer (
     customer_id INT PRIMARY KEY AUTO_INCREMENT,
     cart_id INT,
-    balance INT NOT NULL,
+    customer INT NOT NULL,
     reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     edit_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -186,7 +186,7 @@ E-Commerce System은 다음의 기능을 제공합니다.
     │  │  └─com
     │  │      └─tdd
     │  │          └─ecommerce
-    │  │              ├─balance
+    │  │              ├─customer
     │  │              │  ├─controller
     │  │              │  ├─domain
     │  │              │  ├─dto
