@@ -37,7 +37,7 @@ class ProductServiceTest {
     @DisplayName("🟢상품 코드로 상품 조회")
     void getProductsByProductId() {
         //given
-        Product product = new Product(1L, "있는 상품", 100000L, "etc");
+        Product product = new Product(1L, "있는 상품", 100000L, "etc", null);
         ProductInventory inventory = new ProductInventory(1L, 1L, 20L);
 
         //when
@@ -71,7 +71,7 @@ class ProductServiceTest {
     @DisplayName("🔴 재고 없는 상품 조회")
     void getProductByProductId_OUTOFSTOCK() {
         // given
-        Product product = new Product(1L, "재고 없는 상품", 100000L, "etc");
+        Product product = new Product(1L, "재고 없는 상품", 100000L, "etc", null);
         ProductInventory inventory = new ProductInventory(1L, 1L, 0L);
 
         //when
@@ -92,8 +92,8 @@ class ProductServiceTest {
     void getProducts() {
         // given
         List<Product> products = List.of(
-                new Product(1L, "재고있는상품", 5000L, "etc"),
-                new Product(2L, "재고없는상품", 3000L, "etc")
+                new Product(1L, "재고있는상품", 5000L, "etc", null),
+                new Product(2L, "재고없는상품", 3000L, "etc", null)
         );
         List<ProductInventory> inventories = List.of(
                 new ProductInventory(1L, 1L, 100L) // 재고가 있는 상품만 추가
