@@ -1,10 +1,13 @@
 package com.tdd.ecommerce.product.infrastructure;
 
+import com.tdd.ecommerce.cart.infrastructure.Cart;
 import com.tdd.ecommerce.common.domain.TimeStamped;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -26,5 +29,8 @@ public class Product extends TimeStamped {
 
     @Column(name="category")
     private String category;
+
+    @OneToMany(mappedBy="product")
+    private List<Cart> carts;
 
 }

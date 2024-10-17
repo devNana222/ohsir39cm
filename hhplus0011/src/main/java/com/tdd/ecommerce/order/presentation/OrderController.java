@@ -7,6 +7,7 @@ import com.tdd.ecommerce.order.application.OrderService;
 import com.tdd.ecommerce.order.application.OrderServiceResponse;
 import com.tdd.ecommerce.order.presentation.dto.OrderRequest;
 import com.tdd.ecommerce.order.presentation.dto.OrderResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Tag(
+        name = "주문&결제 시스템",
+        description = "주문 + 결제 후 외부 시스템에 결과를 전송합니다. " +
+                "주문번호로 주문정보를 가져옵니다."
+)
 @RestController
 @RequestMapping("/orders")
 public class OrderController {

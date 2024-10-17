@@ -18,9 +18,6 @@ public class Customer extends TimeStamped {
     @Column(name="customer_id")
     private Long customerId;
 
-    @Column(name="cart_id")
-    private Long cartId;
-
     @Column(name="balance")
     private Long balance;
 

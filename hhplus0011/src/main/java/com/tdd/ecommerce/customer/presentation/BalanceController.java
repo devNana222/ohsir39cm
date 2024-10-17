@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/customers")
 @RestController
 @Tag(
-        name = "Customer Balance API",
+        name = "고객 - 고객 포인트 시스템",
         description = "고객 잔여포인트 조회/충전 API"
 )
 public class BalanceController {

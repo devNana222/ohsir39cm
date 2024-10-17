@@ -87,7 +87,7 @@ public class OrderService {
     }
 
     private boolean isEnoughBalance(Long customerId, Long requiredBalance){
-        return customerRepository.findById(customerId).get().getBalance() >= requiredBalance;
+        return customerRepository.findById(customerId).orElseThrow().getBalance() >= requiredBalance;
     }
 
     private boolean isEnoughStock(Long productId, Long requiredStock) {

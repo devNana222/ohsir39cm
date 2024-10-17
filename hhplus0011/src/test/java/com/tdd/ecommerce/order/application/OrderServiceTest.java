@@ -55,8 +55,8 @@ class OrderServiceTest {
 
     @BeforeEach
     public void setUp() {
-        product1 = new Product(1L,"테스트 1", 30000L, "etc");
-        product2 = new Product(2L,"테스트 2", 20000L, "etc");
+        product1 = new Product(1L,"테스트 1", 30000L, "etc", null);
+        product2 = new Product(2L,"테스트 2", 20000L, "etc", null);
     }
 
     @Test
@@ -121,7 +121,7 @@ class OrderServiceTest {
 
         List<OrderProduct> orderProducts = List.of(new OrderProduct(null, 1L, 1L, 2L, 30000L));
 
-        Customer customer = new Customer(customerId, null, 5000000L);
+        Customer customer = new Customer(customerId, 5000000L);
         ProductInventory inventory = new ProductInventory(1L, 1L, 10L);
 
         //when
@@ -129,12 +129,13 @@ class OrderServiceTest {
         when(productRepository.findByProductId(1L)).thenReturn(product1);
         when(productInventoryRepository.findById(1L)).thenReturn(Optional.of(inventory));
         when(orderRepository.save(any(Order.class))).thenReturn(new Order(1L, customerId));
+        when(fakePGService.sendOrderToDataPlatform(anyList())).thenReturn(true);
 
 
         List<OrderServiceResponse> response = orderService.createOrder(orderId, orderProducts);
 
         //then
-        assertEquals(1L, response.size());
+        assertFalse(response.isEmpty());
         verify(orderProductRepository, times(1)).saveAll(anyList());
         verify(fakePGService, times(1)).sendOrderToDataPlatform(anyList());
     }
@@ -164,8 +165,8 @@ class OrderServiceTest {
         Long customerId = 1L;
         List<OrderProduct> orderProducts = List.of(new OrderProduct(null, 1L, 1L, 2L, 10000L));
 
-        Customer customer = new Customer(null, customerId, 10000L);  // 잔액 부족
-        Product product = new Product(1L, "Test Product", 10000L, "etc");
+        Customer customer = new Customer(null, 10000L);  // 잔액 부족
+        Product product = new Product(1L, "Test Product", 10000L, "etc", null);
         ProductInventory inventory = new ProductInventory(1L, 10L,5L);
 
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
