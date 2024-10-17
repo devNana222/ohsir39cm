@@ -1,9 +1,7 @@
 package com.tdd.ecommerce.order.application;
 
-import com.tdd.ecommerce.common.exception.BusinessException;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.customer.infrastructure.Customer;
-import com.tdd.ecommerce.order.domain.OrderProductRepository;
 import com.tdd.ecommerce.order.domain.OrderRepository;
 import com.tdd.ecommerce.order.infrastructure.Order;
 import com.tdd.ecommerce.order.infrastructure.OrderProduct;
@@ -18,20 +16,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class OrderIntegrationTest {
     @Autowired
     private OrderService sut;

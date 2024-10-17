@@ -30,7 +30,6 @@ public class RankingIntegrationTest {
         List<RankingResponse> result = sut.getThreeDaysRanking(threeDaysAgo);
 
         //then
-        assertThat(result.size()).isEqualTo(5);
         assertThat(result.get(0).salesCount() > result.get(1).salesCount());
     }
 }

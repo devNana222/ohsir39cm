@@ -5,17 +5,16 @@ import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.customer.application.CustomerService;
 import com.tdd.ecommerce.customer.application.CustomerServiceResponse;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
+import com.tdd.ecommerce.customer.infrastructure.Customer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.when;
 
 @Transactional
 @SpringBootTest
@@ -24,19 +23,21 @@ public class CustomerIntegrationTest {
     @Autowired
     CustomerService sut;
 
+    @Autowired
+    CustomerRepository customerRepository;
+
     @Test
     @DisplayName("🟢고객 1명의 포인트 가져오기")
     void getCustomerBalance_SUCCESS() {
         //given
-        Long customerId = 4L;
-        Long balance = 0L;
+        Long customerId = customerRepository.save(new Customer(null, 1000L)).getCustomerId();
         //when
         CustomerServiceResponse result = sut.getCustomerBalance(customerId);
 
         //then
         assertThat(result).isNotNull();
         assertThat(result.getCustomerId()).isEqualTo(customerId);
-        assertThat(result.getBalance()).isEqualTo(balance);
+        assertThat(result.getBalance()).isEqualTo(1000L);
 
     }
 

@@ -88,16 +88,22 @@ public class CartIntegrationTest {
     @Test
     @DisplayName("🟢카트에 상품 추가(기존에 있는 상품)")
     void addCartExistsProduct_SUCCESS() {
-        Long customerId = 1L;
-        Cart cart = getCartProduct(customerId).get();
-        Long productId = cart.getProduct().getProductId();
-        Long amount = cart.getAmount();
+        Long customerId = createNewCustomerAndGetId();
 
-        CartRequest cartRequest = new CartRequest(productId, 2L);
+        Long pi = insertNewProductAndReturnProductId();
+        setProductInCart(customerId, pi, 1L);
 
+        CartRequest cartRequest = new CartRequest(pi, 1L);
         List<CartRequest> cartRequests = Collections.singletonList(cartRequest);
 
-        List<CartResponse> result = Stream.of(sut.addCartProducts(customerId, cartRequests)).toList();
+        Long productId = cartRequests.getFirst().productId();
+        Long amount = cartRequests.getFirst().amount();
+
+        CartRequest cartRequest2 = new CartRequest(productId, 2L);
+
+        List<CartRequest> cartRequests2 = Collections.singletonList(cartRequest2);
+
+        List<CartResponse> result = Stream.of(sut.addCartProducts(customerId, cartRequests2)).toList();
 
         assertThat(result.get(0).getProductInfoDtoList().get(0).getProductAmount()).isEqualTo(amount+2L);
 

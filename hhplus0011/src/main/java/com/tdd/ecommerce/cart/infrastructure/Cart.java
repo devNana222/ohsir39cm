@@ -23,9 +23,6 @@ public class Cart extends TimeStamped {
     @Column(name="customer_id")
     private Long customerId;
 
-//    @Column(name="product_id")
-//    private Long productId;
-
     @Column(name="amount")
     private Long amount;
 
