@@ -56,6 +56,7 @@ public class CartService {
             if (carts.isEmpty()) {
 
                 addProductsToCart(customerId, cr.productId(), cr.amount());
+                responseProduct.add(setProductDetail(cr.productId(), cr.amount()));
             }
             else{
                 Optional<Cart> exists = carts.stream()
@@ -67,8 +68,9 @@ public class CartService {
                 if (exists.isEmpty()) {
                     addProductsToCart(customerId, cr.productId(), cr.amount());
                 }
+                responseProduct.add(setProductDetail(cr.productId(), exists.get().getAmount()));
             }
-            responseProduct.add(setProductDetail(cr.productId(), cr.amount()));
+
         }
         return new CartResponse(
                 customerId,

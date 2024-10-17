@@ -32,12 +32,14 @@ public class RankingService {
 
         return orderedList.stream()
                 .map(r -> {
-                    Product product = productRepository.findByProductId((Long) r[0]);
+                    Long productId = (Long) r[0];
+                    Long orderCount = (Long) r[1];
+                    Product product = productRepository.findByProductId(productId);
 
                     return new RankingResponse(
                             product.getProductId(),
                             product.getProductName(),
-                            (Long) r[1],
+                            orderCount,
                             product.getPrice(),
                             product.getCategory()
                     );

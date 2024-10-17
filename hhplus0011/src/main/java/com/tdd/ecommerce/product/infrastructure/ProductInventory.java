@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Table(name="product_inventory")
 public class ProductInventory extends TimeStamped {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
     private Long id;
 
