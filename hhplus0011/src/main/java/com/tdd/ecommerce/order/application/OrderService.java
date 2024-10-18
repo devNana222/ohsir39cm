@@ -16,6 +16,7 @@ import com.tdd.ecommerce.product.infrastructure.ProductInventory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,6 +59,7 @@ public class OrderService {
         return createOrderResponse(orderId, order.get().getCustomerId(), totalPrice, orderProducts);
     }
 
+    @Transactional
     public List<OrderServiceResponse> createOrder(Long customerId, List<OrderProduct> orders) {
         Long totalRequiredBalance = getRequiredBalance(orders);
 
@@ -91,7 +93,7 @@ public class OrderService {
     }
 
     private boolean isEnoughStock(Long productId, Long requiredStock) {
-        return productInventoryRepository.findById(productId).orElseThrow().getAmount() >= requiredStock;
+        return productInventoryRepository.findByProductIdWithLock(productId).getAmount() >= requiredStock;
     }
 
     private Customer getBalance(Long customerId) {
