@@ -36,7 +36,7 @@ public class RankingController {
         LocalDateTime dateFormat;
         try{
             dateFormat = LocalDate.parse(today).atStartOfDay();
-        } catch (BusinessException | DateTimeParseException e) {
+        } catch (DateTimeParseException e) {
             CommonApiResponse<ErrorCode> errorResponse = new CommonApiResponse<>(false, e.getMessage(), ECommerceExceptions.INVALID_DATE);
 
             return ResponseEntity.badRequest().body(errorResponse);

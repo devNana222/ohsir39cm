@@ -9,6 +9,7 @@ import com.tdd.ecommerce.product.domain.ProductInfoDto;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.infrastructure.Product;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import java.util.Optional;
 @Slf4j
 @AllArgsConstructor
 @Transactional
+
 public class CartService {
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
@@ -107,10 +109,11 @@ public class CartService {
     }
 
     private void addProductsToCart(Long customerId, Long productId, Long amount){
-        Cart cart = new Cart();
-        cart.setCustomerId(customerId);
-        cart.setProduct(productRepository.findByProductId(productId));
-        cart.setAmount(amount);
+        Cart cart = Cart.builder()
+                .customerId(customerId)
+                .product(productRepository.findByProductId(productId))
+                .amount(amount)
+                .build();
 
         cartRepository.save(cart);
     }

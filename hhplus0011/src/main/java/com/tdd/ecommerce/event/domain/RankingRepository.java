@@ -20,5 +20,5 @@ public interface RankingRepository extends JpaRepository<OrderProduct, Long> {
             "WHERE op.regDate >= :threeDaysAgo " +
             "GROUP BY op.productId " +
             "ORDER BY totalSales DESC ")
-    List<Object[]> findByNowdateForRanking(@Param("threeDaysAgo") LocalDateTime threeDaysAgo, Pageable pageable);
+    List<Ranking> findByNowdateForRanking(@Param("threeDaysAgo") LocalDateTime threeDaysAgo, Pageable pageable);
 }

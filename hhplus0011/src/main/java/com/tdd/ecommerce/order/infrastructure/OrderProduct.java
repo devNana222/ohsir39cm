@@ -28,7 +28,6 @@ public class OrderProduct extends TimeStamped {
     @Column(name="amount")
     private Long amount;
 
-    @Setter
     @Column(name="price")
     private Long price;
 

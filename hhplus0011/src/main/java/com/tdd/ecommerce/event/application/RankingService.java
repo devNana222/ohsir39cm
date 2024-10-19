@@ -1,6 +1,7 @@
 package com.tdd.ecommerce.event.application;
 
 import com.tdd.ecommerce.event.application.dto.RankingResponse;
+import com.tdd.ecommerce.event.domain.Ranking;
 import com.tdd.ecommerce.event.domain.RankingRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.infrastructure.Product;
@@ -28,12 +29,13 @@ public class RankingService {
         Pageable pageable = PageRequest.of(0, 5);
 
 
-        List<Object[]> orderedList = rankingRepository.findByNowdateForRanking(threeDaysAgo, pageable);
+        List<Ranking> orderedList = rankingRepository.findByNowdateForRanking(threeDaysAgo, pageable);
 
         return orderedList.stream()
                 .map(r -> {
-                    Long productId = (Long) r[0];
-                    Long orderCount = (Long) r[1];
+                    Long productId = r.getProductId();
+                    Long orderCount = r.getOrderCount();
+
                     Product product = productRepository.findByProductId(productId);
 
                     return new RankingResponse(

@@ -3,16 +3,16 @@ package com.tdd.ecommerce.cart.infrastructure;
 import com.tdd.ecommerce.common.domain.TimeStamped;
 import com.tdd.ecommerce.product.infrastructure.Product;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Getter
-@Setter
+@Builder
 @Table(name="cart")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Cart extends TimeStamped {
 
     @Id
@@ -27,7 +27,6 @@ public class Cart extends TimeStamped {
     private Long amount;
 
     @ManyToOne
-    @Setter
     @JoinColumn(name="product_id")
     private Product product;
 
