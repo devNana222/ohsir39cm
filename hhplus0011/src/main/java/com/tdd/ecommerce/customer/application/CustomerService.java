@@ -20,25 +20,20 @@ public class CustomerService {
     }
 
     public CustomerServiceResponse getCustomerBalance(Long customerId) {
-        Optional<Customer> balance = customerRepository.findById(customerId);
+        Optional<Customer> balance = Optional.ofNullable(customerRepository.findById(customerId)
+                .orElseThrow(() -> new BusinessException(ECommerceExceptions.INVALID_CUSTOMER)));
 
-        if (balance.isEmpty()) {
-            throw new BusinessException(ECommerceExceptions.INVALID_CUSTOMER);
-        }
         return new CustomerServiceResponse(customerId, balance.get().getBalance());
     }
 
     public CustomerServiceResponse chargeCustomerBalance(Long customerId, Long chargeAmount) {
-        Optional<Customer> balance = customerRepository.findById(customerId);
+        Optional<Customer> customer = Optional.ofNullable(customerRepository.findById(customerId)
+                .orElseThrow(() -> new BusinessException(ECommerceExceptions.INVALID_CUSTOMER)));
 
-        if (balance.isEmpty()) {
-            throw new BusinessException(ECommerceExceptions.INVALID_CUSTOMER);
-        }
-
-        Long newBalance = balance.get().chargeBalance(chargeAmount);
+        Long newBalance = customer.get().chargeBalance(chargeAmount);
 
         // 변경된 엔티티를 저장합니다.
-        customerRepository.save(balance.get());
+        customerRepository.save(customer.get());
 
         return new CustomerServiceResponse(customerId, newBalance);
     }

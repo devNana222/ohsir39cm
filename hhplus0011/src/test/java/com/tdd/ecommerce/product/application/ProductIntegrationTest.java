@@ -51,8 +51,6 @@ public class ProductIntegrationTest {
     void getProductByProductId_FAIL() throws Exception {
         Long productId = 100L;
 
-      //  List<ProductServiceResponse> responses = sut.getProductsByProductId(productId);
-
         assertThatThrownBy(() -> sut.getProductsByProductId(productId))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ECommerceExceptions.INVALID_PRODUCT.getMessage());

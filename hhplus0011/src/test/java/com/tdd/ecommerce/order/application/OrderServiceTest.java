@@ -42,7 +42,7 @@ class OrderServiceTest {
     private OrderRepository orderRepository;
 
     @Mock
-    private FakePGService fakePGService;
+    private DataPlatformInterface dataPlatformInterface;
 
     @Mock
     private OrderProductRepository orderProductRepository;
@@ -68,13 +68,12 @@ class OrderServiceTest {
         OrderProduct orderProduct1 = new OrderProduct(1L, orderId, 1L, 3L, 30000L);
         OrderProduct orderProduct2 = new OrderProduct(2L, orderId, 2L, 2L, 20000L);
 
-
-        //when
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
         when(orderProductRepository.findByOrderId(orderId)).thenReturn(List.of(orderProduct1, orderProduct2));
         when(productRepository.findByProductId(1L)).thenReturn(product1);
         when(productRepository.findByProductId(2L)).thenReturn(product2);
 
+        //when
         List<OrderServiceResponse> orderInfo = orderService.getOrderList(orderId);
 
         //then
@@ -87,9 +86,9 @@ class OrderServiceTest {
         // given
         Long orderId = 1L;
 
-        // when
         when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
 
+        // when
         List<OrderServiceResponse> orderInfo = orderService.getOrderList(orderId);
 
         // then
@@ -103,10 +102,10 @@ class OrderServiceTest {
         Long orderId = 1L;
         Order order = new Order(orderId, 1L); // customerId: 1L
 
-        // when
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
         when(orderProductRepository.findByOrderId(orderId)).thenReturn(Collections.emptyList());
 
+        // when
         List<OrderServiceResponse> orderInfo = orderService.getOrderList(orderId);
 
         // then
@@ -124,20 +123,19 @@ class OrderServiceTest {
         Customer customer = new Customer(customerId, 5000000L);
         ProductInventory inventory = new ProductInventory(1L, 1L, 10L);
 
-        //when
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
         when(productRepository.findByProductId(1L)).thenReturn(product1);
         when(productInventoryRepository.findById(1L)).thenReturn(Optional.of(inventory));
         when(orderRepository.save(any(Order.class))).thenReturn(new Order(1L, customerId));
-        when(fakePGService.sendOrderToDataPlatform(anyList())).thenReturn(true);
+        when(dataPlatformInterface.sendOrderMessage(anyList())).thenReturn(true);
 
-
+        //when
         List<OrderServiceResponse> response = orderService.createOrder(orderId, orderProducts);
 
         //then
         assertFalse(response.isEmpty());
         verify(orderProductRepository, times(1)).saveAll(anyList());
-        verify(fakePGService, times(1)).sendOrderToDataPlatform(anyList());
+        verify(dataPlatformInterface, times(1)).sendOrderMessage(anyList());
     }
 
     @Test
@@ -150,10 +148,9 @@ class OrderServiceTest {
 
         ProductInventory inventory = new ProductInventory(1L, 1L, 1L);
 
-        // when
         when(productInventoryRepository.findById(1L)).thenReturn(Optional.of(inventory));
 
-        //then
+        //when & then
         assertThrows(BusinessException.class, () -> orderService.createOrder(1L, orderProducts));
 
     }
@@ -173,7 +170,7 @@ class OrderServiceTest {
         when(productRepository.findByProductId(1L)).thenReturn(product);
         when(productInventoryRepository.findById(1L)).thenReturn(Optional.of(inventory));
 
-        // when, then
+        // when & then
         assertThrows(BusinessException.class, () -> orderService.createOrder(customerId, orderProducts));
 
     }

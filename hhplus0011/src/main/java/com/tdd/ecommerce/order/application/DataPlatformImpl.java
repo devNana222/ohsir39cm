@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class FakePGService {
+public class DataPlatformImpl implements DataPlatformInterface {
 
-    public boolean sendOrderToDataPlatform(List<OrderProduct> order) {
+    public Boolean sendOrderMessage(List<OrderProduct> order) {
         System.out.println("주문 데이터가 전송되었습니다: " + order);
         return !order.isEmpty();
     }

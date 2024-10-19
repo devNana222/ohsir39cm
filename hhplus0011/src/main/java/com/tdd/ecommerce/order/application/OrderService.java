@@ -34,7 +34,7 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final ProductInventoryRepository productInventoryRepository;
     private final OrderRepository orderRepository;
-    private final FakePGService fakePGService;
+    private final DataPlatformInterface dataPlatformInterface;
     private final OrderProductRepository orderProductRepository;
 
     public List<OrderServiceResponse> getOrderList(Long orderId){
@@ -59,7 +59,7 @@ public class OrderService {
         return createOrderResponse(orderId, order.get().getCustomerId(), totalPrice, orderProducts);
     }
 
-    @Transactional
+
     public List<OrderServiceResponse> createOrder(Long customerId, List<OrderProduct> orders) {
         Long totalRequiredBalance = getRequiredBalance(orders);
 
@@ -78,7 +78,7 @@ public class OrderService {
         updateProductInventory(orders);
 
         //결제 성공 시 주문 정보 데이터 플랫폼에 전송
-        if(fakePGService.sendOrderToDataPlatform(orders)) {
+        if(dataPlatformInterface.sendOrderMessage(orders)) {
 
             List<OrderServiceResponse> response = createOrderResponse(newOrder.getOrderId(), customerId, customer.getBalance(), orders);
 
@@ -92,7 +92,8 @@ public class OrderService {
         return customerRepository.findById(customerId).orElseThrow().getBalance() >= requiredBalance;
     }
 
-    private boolean isEnoughStock(Long productId, Long requiredStock) {
+    @Transactional
+    protected boolean isEnoughStock(Long productId, Long requiredStock) {
         return productInventoryRepository.findByProductIdWithLock(productId).getAmount() >= requiredStock;
     }
 

@@ -14,7 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -27,11 +30,9 @@ public class CartService {
 
 
     public List<CartResponse> getCartProducts(Long customerId){
-        if(getCartList(customerId) == null){
-            return Collections.emptyList();
-        }
 
-        List<Cart> cartList = getCartList(customerId);
+        List<Cart> cartList = getCartList(customerId).isEmpty() ? Collections.emptyList() : getCartList(customerId);
+
         List<CartResponse> cartResponses = new ArrayList<>();
         List<CartDetailResponse> detailResponse = new ArrayList<>();
 
@@ -63,11 +64,11 @@ public class CartService {
                         .filter(c -> c.getProduct().getProductId().equals(cr.productId()))
                         .findFirst();
 
-                exists.ifPresent(cart -> cart.addCartAmount(cr.amount()));
+                exists.ifPresentOrElse(
+                        cart -> cart.addCartAmount(cr.amount()),
+                        () -> addProductsToCart(customerId, cr.productId(), cr.amount())
+                );
 
-                if (exists.isEmpty()) {
-                    addProductsToCart(customerId, cr.productId(), cr.amount());
-                }
                 responseProduct.add(setProductDetail(cr.productId(), exists.get().getAmount()));
             }
 
