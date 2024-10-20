@@ -15,10 +15,10 @@ import java.util.Map;
 @Repository
 public interface RankingRepository extends JpaRepository<OrderProduct, Long> {
 
-    @Query("SELECT op.productId, SUM(op.amount) AS totalSales " +
+    @Query("SELECT new com.tdd.ecommerce.event.domain.Ranking(op.productId, SUM(op.amount)) " +
             "FROM OrderProduct op " +
             "WHERE op.regDate >= :threeDaysAgo " +
             "GROUP BY op.productId " +
-            "ORDER BY totalSales DESC ")
+            "ORDER BY SUM(op.amount) DESC ")
     List<Ranking> findByNowdateForRanking(@Param("threeDaysAgo") LocalDateTime threeDaysAgo, Pageable pageable);
 }

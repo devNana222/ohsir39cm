@@ -1,9 +1,9 @@
 package com.tdd.ecommerce.order.application;
 
+import com.tdd.ecommerce.common.exception.ECommerceException;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.customer.infrastructure.Customer;
 import com.tdd.ecommerce.common.exception.BusinessException;
-import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.order.domain.OrderProductRepository;
 import com.tdd.ecommerce.order.domain.OrderRepository;
 import com.tdd.ecommerce.order.infrastructure.Order;
@@ -50,7 +50,7 @@ public class OrderService {
             return Collections.emptyList();
         }
 
-        Long totalPrice = 0L;
+        long totalPrice = 0L;
 
         for(OrderProduct orderProduct : orderProducts){
             totalPrice += orderProduct.getPrice() * orderProduct.getAmount();
@@ -59,14 +59,14 @@ public class OrderService {
         return createOrderResponse(orderId, order.get().getCustomerId(), totalPrice, orderProducts);
     }
 
-
+    @Transactional
     public List<OrderServiceResponse> createOrder(Long customerId, List<OrderProduct> orders) {
         Long totalRequiredBalance = getRequiredBalance(orders);
 
         Customer customer = getBalance(customerId);
 
         if(!isEnoughBalance(customerId, totalRequiredBalance)) {
-            throw new BusinessException(ECommerceExceptions.INSUFFICIENCY_BALANCE);
+            throw new BusinessException(ECommerceException.INSUFFICIENCY_BALANCE);
         }
 
         Order newOrder = saveOrder(customerId);
@@ -80,9 +80,7 @@ public class OrderService {
         //결제 성공 시 주문 정보 데이터 플랫폼에 전송
         if(dataPlatformInterface.sendOrderMessage(orders)) {
 
-            List<OrderServiceResponse> response = createOrderResponse(newOrder.getOrderId(), customerId, customer.getBalance(), orders);
-
-            return response;
+            return createOrderResponse(newOrder.getOrderId(), customerId, customer.getBalance(), orders);
         }
         else
             return Collections.emptyList();
@@ -92,7 +90,6 @@ public class OrderService {
         return customerRepository.findById(customerId).orElseThrow().getBalance() >= requiredBalance;
     }
 
-    @Transactional
     protected boolean isEnoughStock(Long productId, Long requiredStock) {
         return productInventoryRepository.findByProductIdWithLock(productId).getAmount() >= requiredStock;
     }
@@ -102,14 +99,14 @@ public class OrderService {
     }
 
     private Long getRequiredBalance(List<OrderProduct> orders){
-        Long totalRequiredBalance = 0L;
+        long totalRequiredBalance = 0L;
 
         for(OrderProduct order : orders){
             Long productId = order.getProductId();
             Long requiredStock = order.getAmount();
 
             if(!isEnoughStock(productId, requiredStock)) {
-                throw new BusinessException(ECommerceExceptions.OUT_OF_STOCK);
+                throw new BusinessException(ECommerceException.OUT_OF_STOCK);
             }
 
             Product product = productRepository.findByProductId(productId);
@@ -130,7 +127,7 @@ public class OrderService {
             Long requiredStock = order.getAmount();
 
             ProductInventory inventory = productInventoryRepository.findById(productId).orElseThrow(() ->
-                    new BusinessException(ECommerceExceptions.INVALID_PRODUCT));
+                    new BusinessException(ECommerceException.INVALID_PRODUCT));
 
             inventory.decreaseAmount(requiredStock);
             productInventoryRepository.save(inventory);

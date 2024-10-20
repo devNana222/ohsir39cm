@@ -4,6 +4,7 @@ import com.tdd.ecommerce.cart.infrastructure.Cart;
 import com.tdd.ecommerce.common.domain.TimeStamped;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="product")
