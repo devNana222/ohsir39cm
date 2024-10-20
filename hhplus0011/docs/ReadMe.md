@@ -12,7 +12,7 @@
   <summary>ERD</summary>
 <div>
 
-  ![img._erd.png](img_erd.png)
+  ![img._erd.png](database/img_erd.png)
 
 </div>
 </details>
