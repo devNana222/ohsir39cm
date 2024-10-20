@@ -1,6 +1,6 @@
 package com.tdd.ecommerce.order.application;
 
-import com.tdd.ecommerce.common.exception.ECommerceException;
+import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.customer.infrastructure.Customer;
 import com.tdd.ecommerce.common.exception.BusinessException;
@@ -47,6 +47,7 @@ public class OrderService {
         List<OrderProduct> orderProducts = orderProductRepository.findByOrderId(orderId);
 
         if(orderProducts.isEmpty()){
+            log.warn("Order Product is Empty");
             return Collections.emptyList();
         }
 
@@ -66,7 +67,7 @@ public class OrderService {
         Customer customer = getBalance(customerId);
 
         if(!isEnoughBalance(customerId, totalRequiredBalance)) {
-            throw new BusinessException(ECommerceException.INSUFFICIENCY_BALANCE);
+            throw new BusinessException(ECommerceExceptions.INSUFFICIENCY_BALANCE);
         }
 
         Order newOrder = saveOrder(customerId);
@@ -106,7 +107,7 @@ public class OrderService {
             Long requiredStock = order.getAmount();
 
             if(!isEnoughStock(productId, requiredStock)) {
-                throw new BusinessException(ECommerceException.OUT_OF_STOCK);
+                throw new BusinessException(ECommerceExceptions.OUT_OF_STOCK);
             }
 
             Product product = productRepository.findByProductId(productId);
@@ -127,7 +128,7 @@ public class OrderService {
             Long requiredStock = order.getAmount();
 
             ProductInventory inventory = productInventoryRepository.findById(productId).orElseThrow(() ->
-                    new BusinessException(ECommerceException.INVALID_PRODUCT));
+                    new BusinessException(ECommerceExceptions.INVALID_PRODUCT));
 
             inventory.decreaseAmount(requiredStock);
             productInventoryRepository.save(inventory);

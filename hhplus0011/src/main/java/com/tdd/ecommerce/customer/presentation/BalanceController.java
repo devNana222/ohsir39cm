@@ -1,12 +1,14 @@
 package com.tdd.ecommerce.customer.presentation;
 
 
+import com.tdd.ecommerce.common.exception.CommonExceptions;
+import com.tdd.ecommerce.common.exception.ECommerceExceptions;
+import com.tdd.ecommerce.common.model.ResponseUtil;
 import com.tdd.ecommerce.customer.application.CustomerService;
 import com.tdd.ecommerce.customer.application.CustomerServiceResponse;
 import com.tdd.ecommerce.customer.presentation.dto.ChargeRequest;
 import com.tdd.ecommerce.customer.presentation.dto.BalanceResponse;
 import com.tdd.ecommerce.common.exception.BusinessException;
-import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.common.model.CommonApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,14 +37,10 @@ public class BalanceController {
 
             BalanceResponse result = new BalanceResponse(customerId, customerServiceResponse.getBalance());
 
-            CommonApiResponse<BalanceResponse> response = new CommonApiResponse<>(true, "조회를 성공했습니다. 현재 고객님의 잔액입니다.", result);
-
-            return ResponseEntity.ok().body(response);
-
+            return ResponseUtil.buildSuccessResponse("고객번호 : "+ customerId + "님의 잔액 정보입니다.", result);
         } catch (BusinessException e) {
             // 고객이 존재하지 않을 경우 오류 처리
-            CommonApiResponse<ECommerceExceptions> errorResponse = new CommonApiResponse<>(false, e.getMessage(), ECommerceExceptions.INVALID_CUSTOMER);
-            return ResponseEntity.badRequest().body(errorResponse);
+            return ResponseUtil.buildErrorResponse(ECommerceExceptions.INVALID_CUSTOMER, ECommerceExceptions.INVALID_CUSTOMER.getMessage());
         }
     }
 
@@ -53,19 +51,12 @@ public class BalanceController {
           request.validate();
 
           CustomerServiceResponse customerServiceResponse = customerService.chargeCustomerBalance(customerId, request.balance());
-
-          CommonApiResponse<Long> response = new CommonApiResponse<>(true, "충전이 완료되었습니다.", customerServiceResponse.getBalance());
-
-          return ResponseEntity.ok(response);
+          return ResponseUtil.buildSuccessResponse(request.balance() + " point 충전이 완료되었습니다..", customerServiceResponse);
 
       } catch (IllegalArgumentException e) {
-          CommonApiResponse<String> errorResponse = new CommonApiResponse<>(false, e.getMessage(), "INVALID_CHARGE_AMOUNT");
-
-          return ResponseEntity.badRequest().body(errorResponse);
+          return ResponseUtil.buildErrorResponse(CommonExceptions.INVALID_PARAMETER, CommonExceptions.INVALID_PARAMETER.getMessage());
       } catch (BusinessException e) {
-          CommonApiResponse<String> errorResponse = new CommonApiResponse<>(false, e.getMessage(), "INVALID_CUSTOMER");
-
-          return ResponseEntity.badRequest().body(errorResponse);
+          return ResponseUtil.buildErrorResponse(ECommerceExceptions.INVALID_CUSTOMER, ECommerceExceptions.INVALID_CUSTOMER.getMessage());
       }
   }
 }

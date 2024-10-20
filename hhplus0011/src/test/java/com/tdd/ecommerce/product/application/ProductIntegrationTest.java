@@ -1,7 +1,7 @@
 package com.tdd.ecommerce.product.application;
 
 import com.tdd.ecommerce.common.exception.BusinessException;
-import com.tdd.ecommerce.common.exception.ECommerceException;
+import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.infrastructure.Product;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -67,7 +66,7 @@ public class ProductIntegrationTest {
 
         assertThatThrownBy(() -> sut.getProductsByProductId(productId))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage(ECommerceException.INVALID_PRODUCT.getMessage());
+                .hasMessage(ECommerceExceptions.INVALID_PRODUCT.getMessage());
     }
 
     @Test
@@ -83,7 +82,7 @@ public class ProductIntegrationTest {
 
         assertThatThrownBy(() -> sut.getProductsByProductId(savedProductId).getFirst())
                 .isInstanceOf(BusinessException.class)
-                .hasMessage(ECommerceException.OUT_OF_STOCK.getMessage());
+                .hasMessage(ECommerceExceptions.OUT_OF_STOCK.getMessage());
 
     }
 

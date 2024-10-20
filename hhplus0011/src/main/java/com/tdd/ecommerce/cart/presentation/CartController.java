@@ -6,6 +6,7 @@ import com.tdd.ecommerce.cart.presentation.dto.CartRequestDto;
 import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.common.model.CommonApiResponse;
 
+import com.tdd.ecommerce.common.model.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,32 +32,26 @@ public class CartController {
     @GetMapping("/{customerId}")
     public ResponseEntity<CommonApiResponse<?>> getCart(@PathVariable("customerId") long customerId) {
         List<CartResponse> cartProducts = cartService.getCartProducts(customerId);
-
-        CommonApiResponse<?> response = new CommonApiResponse<>(true, "조회 성공", cartProducts);
-        return ResponseEntity.ok(response);
+        return ResponseUtil.buildSuccessResponse("현재 장바구니 정보입니다.", cartProducts);
     }
 
     @PatchMapping()
     public ResponseEntity<CommonApiResponse<?>> addCart(@RequestBody CartRequestDto request) {
         CartResponse cartProducts = cartService.addCartProducts(request.customerId(), request.products());
 
-        CommonApiResponse<?> response = new CommonApiResponse<>(true, "장바구니에 정상적으로 담겼습니다.", cartProducts);
-        return ResponseEntity.ok(response);
+        return ResponseUtil.buildSuccessResponse("장바구니에 정상적으로 담겼습니다.", cartProducts);
     }
 
     @DeleteMapping("/{customerId}")
     public ResponseEntity<?> removeProduct(@PathVariable("customerId") long customerId) {
         boolean result = cartService.removeCart(customerId);
-        String resultMsg = "";
 
         if(result){
-            resultMsg = "장바구니가 정상적으로 삭제되었습니다.";
+            return ResponseUtil.buildSuccessResponse("장바구니에 정상적으로 담겼습니다.", null);
         }
         else{
-            resultMsg = ECommerceExceptions.INVALID_CART.getMessage();
+            return ResponseUtil.buildErrorResponse(ECommerceExceptions.FAILED_DELETE, ECommerceExceptions.FAILED_DELETE.getMessage());
         }
-        CommonApiResponse<?> response = new CommonApiResponse<>(result, resultMsg, null);
-        return ResponseEntity.ok(response);
 
     }
 
