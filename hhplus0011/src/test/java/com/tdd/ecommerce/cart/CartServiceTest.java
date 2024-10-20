@@ -38,11 +38,11 @@ public class CartServiceTest {
     @BeforeEach
     void setUp() {
         carts = new ArrayList<>();
-        Cart cart = new Cart();
-
-        cart.setCartId(1L);
-        cart.setCustomerId(1L);
-        cart.setProduct(new Product(1L, "test", 100L, "etc", null));
+        Cart cart = Cart.builder()
+                .customerId(1L)
+                .product(new Product(1L, "test", 100L, "etc", null))
+                .amount(1L)
+                .build();
         carts.add(cart);
     }
 
@@ -62,13 +62,14 @@ public class CartServiceTest {
     @DisplayName("🟢정상적인 장바구니 조회")
     void getCartProduct_SUCCESS() {
         Long customerId = 1L;
-        Product product = new Product(1L, "Product Name", 100L, "etc", null);
+        Product product = new Product(2L, "Product Name2", 100L, "etc", null);
 
-        Cart cart = new Cart();
-        cart.setCustomerId(customerId);
-        cart.setProduct(product);
-        cart.setAmount(3L);
-
+        Cart cart = Cart.builder()
+            .customerId(1L)
+            .product(product)
+            .amount(1L)
+            .build();
+        carts.add(cart);
         // 실제 서비스 메서드 호출
         List<CartResponse> result = cartService.getCartProducts(customerId);
 
@@ -81,10 +82,10 @@ public class CartServiceTest {
     @DisplayName("🔴이미 있는 상품")
     void addCartAlreadyExistsProduct() {
         Long customerId = 1L;
-        Cart existingCart = new Cart();
-        existingCart.setCustomerId(customerId);
-        existingCart.setProduct(new Product());
-        existingCart.setAmount(3L);
+        Cart existingCart = Cart.builder()
+                .customerId(1L)
+                .product(new Product())
+                .amount(3L).build();
 
         List<CartRequest> cartRequests = List.of(new CartRequest(1L, 3L));
 

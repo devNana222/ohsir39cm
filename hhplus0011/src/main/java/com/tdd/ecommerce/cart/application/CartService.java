@@ -9,7 +9,6 @@ import com.tdd.ecommerce.product.domain.ProductInfoDto;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.infrastructure.Product;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

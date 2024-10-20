@@ -1,6 +1,7 @@
 package com.tdd.ecommerce.event.application;
 
 import com.tdd.ecommerce.event.application.dto.RankingResponse;
+import com.tdd.ecommerce.event.domain.Ranking;
 import com.tdd.ecommerce.event.domain.RankingRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.infrastructure.Product;
@@ -40,9 +41,9 @@ class RankingServiceTest {
 
         Pageable pageable = PageRequest.of(0,5);
 
-        List<Object[]> orderList = new ArrayList<>();
-        orderList.add(new Object[]{1L, 200L});
-        orderList.add(new Object[]{2L, 300L});
+        List<Ranking> orderList = new ArrayList<>();
+        orderList.add(new Ranking(1L, 300L));
+        orderList.add(new Ranking(2L, 200L));
 
         when(rankingRepository.findByNowdateForRanking(threeDaysAgo, pageable)).thenReturn(orderList);
 

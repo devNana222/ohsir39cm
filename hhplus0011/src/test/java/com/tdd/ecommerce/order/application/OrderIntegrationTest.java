@@ -1,7 +1,9 @@
 package com.tdd.ecommerce.order.application;
 
+import com.tdd.ecommerce.common.exception.BusinessException;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.customer.infrastructure.Customer;
+import com.tdd.ecommerce.order.domain.OrderProductRepository;
 import com.tdd.ecommerce.order.domain.OrderRepository;
 import com.tdd.ecommerce.order.infrastructure.Order;
 import com.tdd.ecommerce.order.infrastructure.OrderProduct;
@@ -16,16 +18,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
+@ActiveProfiles("test")
 public class OrderIntegrationTest {
     @Autowired
     private OrderService sut;
@@ -54,17 +63,11 @@ public class OrderIntegrationTest {
         Product product = new Product(1L, "Test Product", 10000L,"etc", null); // 가격 10,000
         productId = productRepository.save(product).getProductId();
 
-        ProductInventory inventory = new ProductInventory(inventoryId, productId, 100L); // 재고 100
+        ProductInventory inventory = new ProductInventory(inventoryId, productId, 30L); // 재고 100
 
         inventoryId = productInventoryRepository.save(inventory).getId(); // 재고 ID 저장
     }
- /*
-    @BeforeEach
-    void setUp() {
-        productInventoryRepository.updateStock(1L, 30L);
-        orderProductRepository.deleteByProductId(1L);
-    }
-*/
+
     @Test
     @Rollback
     @DisplayName("🟢주문 테스트 성공")
@@ -91,44 +94,12 @@ public class OrderIntegrationTest {
         assertThat(response).isNotEmpty();
         assertThat(response.getFirst().getOrderProducts().getFirst().getProductId()).isEqualTo(productId);
     }
-  /*  @Test
-    @DisplayName("🔴주문 동시성 테스트 - 재고 초과")
-    void createOrder_FAIL() throws InterruptedException {
-        Long productId = 1L;
-        int quantity = 20;
 
 
-        CountDownLatch latch = new CountDownLatch(quantity);
-
-        ExecutorService executorService = Executors.newFixedThreadPool(quantity);
-
-        for(int i = 1; i < quantity + 1; i++){
-            Long  uniqueId = (long) i;
-            executorService.submit(()->{
-                try{
-                    List<OrderProduct> orderProducts = new ArrayList<>();
-                    Long orderId = saveOrder(uniqueId).getOrderId();
-
-                    orderProducts.add(new OrderProduct(null, orderId, productId, 2L, 1000L));
-                    sut.createOrder(uniqueId, orderProducts);
-                }catch (BusinessException e){
-                    System.out.println(" e.getMessage() " + "customerId : " + uniqueId);
-                } finally {
-                    latch.countDown();
-                }
-            });
-        }
-        latch.await(); // 모든 스레드가 완료될 때까지 대기
-        executorService.shutdown();
-
-        Thread.sleep(1000);
-
-        assertEquals(orderProductRepository.countByProductId(productId), 15L);
-    }
-*/
     private Order saveOrder(Long customerId) {
         Order order = new Order(null, customerId);
         return orderRepository.save(order);
     }
+
 
 }

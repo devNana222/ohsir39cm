@@ -12,6 +12,7 @@ import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.infrastructure.Product;
 import com.tdd.ecommerce.product.infrastructure.ProductInventory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,18 @@ public class CartIntegrationTest {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+
+    @BeforeEach
+    public void setUp() {
+        Product product = new Product(1L, "Test Product", 10000L,"etc", null);
+        Product product2 = new Product(2L, "Test Product2", 1000L,"etc", null);
+        Long productId = productRepository.save(product).getProductId();
+        Long productId2 = productRepository.save(product2).getProductId();
+
+        productInventoryRepository.save(new ProductInventory(null, productId, 30L));
+        productInventoryRepository.save(new ProductInventory(null, productId2, 30L));
+    }
 
     @Test
     @DisplayName("🟢고객의 카트상품들 가져오기")
@@ -145,11 +158,11 @@ public class CartIntegrationTest {
     }
 
     private void setProductInCart(Long customerId, Long productId, Long amount){
-        Cart cart = new Cart();
-        cart.setCustomerId(customerId);
-        cart.setProduct(productRepository.findByProductId(productId));
-        cart.setAmount(amount);
-
+        Cart cart = Cart.builder()
+                .customerId(customerId)
+                .product(productRepository.findByProductId(productId))
+                .amount(amount)
+                .build();
         cartRepository.save(cart);
     }
 

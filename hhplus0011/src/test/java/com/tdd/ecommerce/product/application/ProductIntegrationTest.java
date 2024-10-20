@@ -1,16 +1,18 @@
 package com.tdd.ecommerce.product.application;
 
 import com.tdd.ecommerce.common.exception.BusinessException;
-import com.tdd.ecommerce.common.exception.ECommerceExceptions;
+import com.tdd.ecommerce.common.exception.ECommerceException;
 import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.infrastructure.Product;
 import com.tdd.ecommerce.product.infrastructure.ProductInventory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -21,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
+@ActiveProfiles("test")
 public class ProductIntegrationTest {
 
     @Autowired
@@ -33,6 +35,18 @@ public class ProductIntegrationTest {
     @Autowired
     private ProductInventoryRepository productInventoryRepository;
 
+    private Long customerId;
+    private Long productId;
+    private Long inventoryId;
+
+    @BeforeEach
+    void setUp() {
+        Product product = new Product(1L, "Test Product", 10000L,"etc", null); // 가격 10,000
+        productId = productRepository.save(product).getProductId();
+
+        ProductInventory inventory = new ProductInventory(inventoryId, productId, 100L); // 재고 100
+        inventoryId = productInventoryRepository.save(inventory).getId();
+    }
 
     @Test
     @DisplayName("🟢상품 번호로 상품정보 가져오기")
@@ -53,7 +67,7 @@ public class ProductIntegrationTest {
 
         assertThatThrownBy(() -> sut.getProductsByProductId(productId))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage(ECommerceExceptions.INVALID_PRODUCT.getMessage());
+                .hasMessage(ECommerceException.INVALID_PRODUCT.getMessage());
     }
 
     @Test
@@ -69,7 +83,7 @@ public class ProductIntegrationTest {
 
         assertThatThrownBy(() -> sut.getProductsByProductId(savedProductId).getFirst())
                 .isInstanceOf(BusinessException.class)
-                .hasMessage(ECommerceExceptions.OUT_OF_STOCK.getMessage());
+                .hasMessage(ECommerceException.OUT_OF_STOCK.getMessage());
 
     }
 
@@ -79,8 +93,6 @@ public class ProductIntegrationTest {
         List<ProductServiceResponse> responses = sut.getProducts();
 
         assertTrue(responses.get(0).getAmount() > 0);
-        //assertTrue(responses.get(1).getAmount() > 0);
-        //assertTrue(responses.get(2).getAmount() > 0);
     }
 
     private Product saveProduct(Product product) {

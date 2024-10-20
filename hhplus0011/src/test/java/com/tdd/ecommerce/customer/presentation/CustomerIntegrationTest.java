@@ -1,7 +1,7 @@
 package com.tdd.ecommerce.customer.presentation;
 
 import com.tdd.ecommerce.common.exception.BusinessException;
-import com.tdd.ecommerce.common.exception.ECommerceExceptions;
+import com.tdd.ecommerce.common.exception.ECommerceException;
 import com.tdd.ecommerce.customer.application.CustomerService;
 import com.tdd.ecommerce.customer.application.CustomerServiceResponse;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
@@ -51,7 +51,7 @@ public class CustomerIntegrationTest {
         //when & then
         assertThatThrownBy(() -> sut.getCustomerBalance(customerId))
                 .isInstanceOf(BusinessException.class)
-                .hasMessageContaining(ECommerceExceptions.INVALID_CUSTOMER.getMessage());
+                .hasMessageContaining(ECommerceException.INVALID_CUSTOMER.getMessage());
 
     }
 
@@ -78,7 +78,7 @@ public class CustomerIntegrationTest {
         //when&then
         assertThatThrownBy(() -> sut.chargeCustomerBalance(customerId, chargeAmount))
                 .isInstanceOf(BusinessException.class)
-                .hasMessageContaining(ECommerceExceptions.INVALID_CUSTOMER.getMessage());
+                .hasMessageContaining(ECommerceException.INVALID_CUSTOMER.getMessage());
 
     }
     //예외 객체의 경우, 동일한 예외 클래스와 메시지가 발생하더라도 객체 비교는 서로 다른 인스턴스로 취급됨.
