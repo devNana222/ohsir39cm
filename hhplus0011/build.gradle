@@ -35,8 +35,10 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'com.h2database:h2' //테스트시에 사용하는 내장Database
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
+  //  implementation 'com.google.guava:guava:11.0.2'
     //swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
     //restdocs
