@@ -2,7 +2,6 @@ package com.tdd.ecommerce.order.presentation;
 
 import com.tdd.ecommerce.common.exception.BusinessException;
 import com.tdd.ecommerce.common.exception.ECommerceExceptions;
-import com.tdd.ecommerce.common.model.CommonApiResponse;
 import com.tdd.ecommerce.common.model.ResponseUtil;
 import com.tdd.ecommerce.order.application.OrderService;
 import com.tdd.ecommerce.order.application.OrderServiceResponse;
@@ -32,7 +31,7 @@ public class OrderController {
 
 
     @PostMapping
-    public ResponseEntity<CommonApiResponse<?>> createOrder(@RequestBody OrderRequest request) {
+    public ResponseEntity<?> createOrder(@RequestBody OrderRequest request) {
         try{
             List<OrderServiceResponse> serviceResponses = orderService.createOrder(request.getCustomerId(), request.getOrderProducts());
 
@@ -43,7 +42,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<CommonApiResponse<?>> getOrder(@PathVariable Long orderId) {
+    public ResponseEntity<?> getOrder(@PathVariable Long orderId) {
 
         List<OrderServiceResponse> serviceResponses = orderService.getOrderList(orderId);
 
@@ -53,4 +52,9 @@ public class OrderController {
         return ResponseUtil.buildSuccessResponse("주문번호 : "+orderId + "의 주문정보입니다.", serviceResponses);
     }
 
+    @PostMapping("/cart")
+    public ResponseEntity<?> createOrderFromCart(@RequestBody OrderRequest request) {
+        List<OrderServiceResponse> serviceResponses = orderService.createOrderFromCart(request.getCustomerId(), request.getOrderProducts());
+        return ResponseUtil.buildSuccessResponse("장바구니에서 주문을 정상적으로 전송하였습니다.", serviceResponses);
+    }
 }

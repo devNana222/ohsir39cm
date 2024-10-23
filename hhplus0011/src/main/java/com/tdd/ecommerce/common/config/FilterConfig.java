@@ -4,7 +4,9 @@ import com.tdd.ecommerce.common.filter.CorsFilter;
 import com.tdd.ecommerce.common.filter.XSSFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 public class FilterConfig {
     @Bean
     public FilterRegistrationBean<CorsFilter> corsFilter() {

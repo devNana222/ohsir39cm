@@ -60,7 +60,7 @@ class OrderServiceTest {
     }
 
     @Test
-    @DisplayName("🟢정상적인 주문결과 조회")
+    @DisplayName("🟢주문번호 1번을 조회하면 두개의 상품이 반환되고 전체 주문 금액은 130000이다.")
     void getOrderList_SUCCESS() {
         //given
         Long orderId = 1L;
@@ -77,11 +77,11 @@ class OrderServiceTest {
         List<OrderServiceResponse> orderInfo = orderService.getOrderList(orderId);
 
         //then
-        assertEquals(130000L, orderInfo.get(0).getBalance());
+        assertEquals(130000L, orderInfo.getFirst().getBalance());
 
     }
     @Test
-    @DisplayName("🔴주문이 존재하지 않는 경우")
+    @DisplayName("🔴주문이 존재하지 않는 경우 빈 리스트가 반환된다.")
     void getOrderList_ORDER_NOT_FOUND() {
         // given
         Long orderId = 1L;
@@ -96,11 +96,11 @@ class OrderServiceTest {
     }
 
     @Test
-    @DisplayName("🔴주문 상품이 존재하지 않는 경우")
+    @DisplayName("🔴주문 상품이 존재하지 않는 경우 빈 리스트가 반환된다.")
     void getOrderList_NO_ORDER_PRODUCTS() {
         // given
         Long orderId = 1L;
-        Order order = new Order(orderId, 1L); // customerId: 1L
+        Order order = new Order(orderId, 1L);
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
         when(orderProductRepository.findByOrderId(orderId)).thenReturn(Collections.emptyList());
@@ -113,6 +113,7 @@ class OrderServiceTest {
     }
 
     @Test
+    @DisplayName("🟢성공적으로 주문을 하면 saveAll은 한번 실행되고 외부로 결과전송도 한번 된다.")
     void createOrder_SUCCESS() {
         //given
         Long orderId = 1L;
@@ -139,7 +140,7 @@ class OrderServiceTest {
     }
 
     @Test
-    @DisplayName("🔴재고 부족")
+    @DisplayName("🔴재고 부족하면 BusinessException이 발생한다.")
     void createOrder_OUT_OF_STOCK() {
         // given
         List<OrderProduct> orderProducts = List.of(
@@ -156,7 +157,7 @@ class OrderServiceTest {
     }
 
     @Test
-    @DisplayName("🔴잔액 부족")
+    @DisplayName("🔴잔액 부족하면 BusinessException이 발생한다.")
     void createOrder_INSUFFICIENT_BALANCE() {
         // given
         Long customerId = 1L;

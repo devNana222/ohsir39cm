@@ -1,7 +1,7 @@
 package com.tdd.ecommerce.customer.presentation.dto;
 
 
-public record ChargeRequest(Long balance) {
+public record CustomerRequest(Long balance) {
 
     public void validate() {
         if (this.balance <= 0) {

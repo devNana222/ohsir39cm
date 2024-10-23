@@ -11,13 +11,14 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 
     Cart save(Cart cart);
 
-    @Query("SELECT c FROM Cart c WHERE c.cartId = :cartId")
-    List<Cart> findByCartId(Long cartId);
-
     @Query("SELECT c FROM Cart c WHERE c.customerId = :customerId")
     List<Cart> findAllByCustomerId(Long customerId);
 
     @Modifying
     @Query("DELETE FROM Cart c WHERE c.customerId = :customerId")
     void deleteByCustomerId(Long customerId);
+
+    @Modifying
+    @Query("DELETE FROM Cart c WHERE c.customerId = :customerId AND c.product.productId = :productId")
+    void deleteCartByCustomerIdAndProductId(Long customerId, Long productId);
 }

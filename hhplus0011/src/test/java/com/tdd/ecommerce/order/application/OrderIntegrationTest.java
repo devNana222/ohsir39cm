@@ -1,6 +1,5 @@
 package com.tdd.ecommerce.order.application;
 
-import com.tdd.ecommerce.common.exception.BusinessException;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.customer.infrastructure.Customer;
 import com.tdd.ecommerce.order.domain.OrderProductRepository;
@@ -19,18 +18,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -53,32 +45,33 @@ public class OrderIntegrationTest {
     private Long customerId;
     private Long productId;
     private Long inventoryId;
+    @Autowired
+    private OrderProductRepository orderProductRepository;
 
     @BeforeEach
     public void setUp() {
 
-        Customer customer = new Customer(null, 100000L); // 초기 잔액 100,000
+        Customer customer = new Customer(null, 100000L);
         customerId = customerRepository.save(customer).getCustomerId();
 
-        Product product = new Product(1L, "Test Product", 10000L,"etc", null); // 가격 10,000
+        Product product = new Product(null, "Test Product", 10000L,"etc", null);
         productId = productRepository.save(product).getProductId();
 
-        ProductInventory inventory = new ProductInventory(inventoryId, productId, 30L); // 재고 100
+        ProductInventory inventory = new ProductInventory(inventoryId, productId, 30L);
 
-        inventoryId = productInventoryRepository.save(inventory).getId(); // 재고 ID 저장
+        inventoryId = productInventoryRepository.save(inventory).getId();
     }
 
     @Test
     @Rollback
-    @DisplayName("🟢주문 테스트 성공")
+    @DisplayName("🟢1L상품의 주문을 성공하면 반환되는 리스트의 상품코드는 1L, 주문수량은 1L이다.")
     void createOrder_SUCCESS(){
         Long orderId = saveOrder(customerId).getOrderId();
-        OrderProduct orderProduct = new OrderProduct(null, orderId, productId, 1L, 10000L  ); // 상품 ID와 수량
+        OrderProduct orderProduct = new OrderProduct(null, orderId, productId, 1L, 10000L);
         List<OrderProduct> orders = Collections.singletonList(orderProduct);
 
         List<OrderServiceResponse> response = sut.createOrder(customerId, orders);
 
-        System.out.println("res : " + response);
         // 응답 검증
         assertThat(response).isNotEmpty();
         assertThat(response.getFirst().getOrderProducts().getFirst().getProductId()).isEqualTo(productId);
@@ -86,11 +79,13 @@ public class OrderIntegrationTest {
     }
 
     @Test
-    @DisplayName("🟢주문 정보 가져오기")
+    @DisplayName("🟢주문번호1L의 주문 정보는 비어있지 않고 상품코드가 1L이다.")
     void getOrderList_SUCCESS(){
         Long orderId = saveOrder(customerId).getOrderId();
+        OrderProduct orderProduct = new OrderProduct(null, orderId, productId, 1L, 10000L);
+        orderProductRepository.save(orderProduct);
 
-        List<OrderServiceResponse> response = sut.getOrderList(customerId);
+        List<OrderServiceResponse> response = sut.getOrderList(orderId);
         assertThat(response).isNotEmpty();
         assertThat(response.getFirst().getOrderProducts().getFirst().getProductId()).isEqualTo(productId);
     }
@@ -100,6 +95,4 @@ public class OrderIntegrationTest {
         Order order = new Order(null, customerId);
         return orderRepository.save(order);
     }
-
-
 }

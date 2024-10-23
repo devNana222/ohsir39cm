@@ -6,10 +6,9 @@ import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.common.model.ResponseUtil;
 import com.tdd.ecommerce.customer.application.CustomerService;
 import com.tdd.ecommerce.customer.application.CustomerServiceResponse;
-import com.tdd.ecommerce.customer.presentation.dto.ChargeRequest;
-import com.tdd.ecommerce.customer.presentation.dto.BalanceResponse;
+import com.tdd.ecommerce.customer.presentation.dto.CustomerRequest;
+import com.tdd.ecommerce.customer.presentation.dto.CustomerResponse;
 import com.tdd.ecommerce.common.exception.BusinessException;
-import com.tdd.ecommerce.common.model.CommonApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,21 +20,21 @@ import org.springframework.web.bind.annotation.*;
         name = "고객 - 고객 포인트 시스템",
         description = "고객 잔여포인트 조회/충전 API"
 )
-public class BalanceController {
+public class CustomerController {
 
     private final CustomerService customerService;
 
     @Autowired
-    public BalanceController(CustomerService customerService) {
+    public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
     }
 
     @GetMapping("/{customer_id}/balance")
-    public ResponseEntity<CommonApiResponse<?>> getBalance(@PathVariable("customer_id") Long customerId) {
+    public ResponseEntity<?> getBalance(@PathVariable("customer_id") Long customerId) {
         try {
             CustomerServiceResponse customerServiceResponse = customerService.getCustomerBalance(customerId);
 
-            BalanceResponse result = new BalanceResponse(customerId, customerServiceResponse.getBalance());
+            CustomerResponse result = new CustomerResponse(customerId, customerServiceResponse.getBalance());
 
             return ResponseUtil.buildSuccessResponse("고객번호 : "+ customerId + "님의 잔액 정보입니다.", result);
         } catch (BusinessException e) {
@@ -46,7 +45,7 @@ public class BalanceController {
 
 
   @PatchMapping("/{customer_id}/balance/charge")
-  public ResponseEntity<CommonApiResponse<?>> chargeBalance(@PathVariable("customer_id") Long customerId, @RequestBody ChargeRequest request) {
+  public ResponseEntity<?> chargeBalance(@PathVariable("customer_id") Long customerId, @RequestBody CustomerRequest request) {
       try {
           request.validate();
 

@@ -1,4 +1,4 @@
-package com.tdd.ecommerce.config;
+package com.tdd.ecommerce.common.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

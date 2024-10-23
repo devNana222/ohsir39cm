@@ -36,26 +36,27 @@ public class ProductStockController {
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<CommonApiResponse<?>> getProductInfo(@PathVariable Long productId) {
+    public ResponseEntity<?> getProductInfo(@PathVariable Long productId) {
         try{
-            List<ProductServiceResponse> products = productService.getProductsByProductId(productId);
+            List<ProductServiceResponse> products = productService.getProductByProductId(productId);
             log.info("상품 코드 : {}, 상품 정보 : {}", productId, products);
+
             return ResponseUtil.buildSuccessResponse("상품코드 : "+ productId + "의 상품 정보입니다.", products);
         } catch (BusinessException e) {
-            log.error(ECommerceExceptions.INVALID_PRODUCT.getMessage());
+            log.warn(ECommerceExceptions.INVALID_PRODUCT.getMessage());
             return ResponseUtil.buildErrorResponse(ECommerceExceptions.INVALID_PRODUCT, ECommerceExceptions.INVALID_PRODUCT.getMessage());
         }
     }
 
     @GetMapping()
-    public ResponseEntity<CommonApiResponse<?>> getProductsInStock() {
+    public ResponseEntity<?> getProductsInStock() {
         try{
             List<ProductServiceResponse> products = productService.getProducts();
 
             return ResponseUtil.buildSuccessResponse("현재 재고가 있는 상품들입니다.", products);
         }
         catch(BusinessException e){
-            log.error(ECommerceExceptions.OUT_OF_STOCK.getMessage());
+            log.warn(ECommerceExceptions.OUT_OF_STOCK.getMessage());
             return ResponseUtil.buildErrorResponse(ECommerceExceptions.OUT_OF_STOCK, ECommerceExceptions.OUT_OF_STOCK.getMessage());
         }
     }

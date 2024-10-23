@@ -1,7 +1,6 @@
 package com.tdd.ecommerce.event.presentation;
 
 import com.tdd.ecommerce.common.exception.ECommerceExceptions;
-import com.tdd.ecommerce.common.model.CommonApiResponse;
 import com.tdd.ecommerce.common.model.ResponseUtil;
 import com.tdd.ecommerce.event.application.RankingService;
 import com.tdd.ecommerce.event.application.dto.RankingResponse;
@@ -31,7 +30,7 @@ public class RankingController {
     }
 
     @GetMapping("/{today}")
-    public ResponseEntity<CommonApiResponse<?>> getTopRank(@PathVariable("today") String today) {
+    public ResponseEntity<?> getTopRank(@PathVariable("today") String today) {
         LocalDateTime dateFormat;
         try{
             dateFormat = LocalDate.parse(today).atStartOfDay();

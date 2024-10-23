@@ -14,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +33,7 @@ class RankingServiceTest {
     RankingRepository rankingRepository;
 
     @Test
-    @DisplayName("🟢정상적으로 TOP 5 를 가져온다.")
+    @DisplayName("🟢서로다른 상품의 판매 데이터를 2개 넣은 후 랭킹을 조회하면 2개의 판매 데이터가 나온다.")
     void getThreeDaysRanking_SUCCESS() {
         LocalDateTime dateFormat = LocalDateTime.now();
         LocalDateTime threeDaysAgo = dateFormat.minusDays(2);

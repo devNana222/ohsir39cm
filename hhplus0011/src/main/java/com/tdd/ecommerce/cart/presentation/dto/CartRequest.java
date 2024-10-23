@@ -1,10 +1,8 @@
 package com.tdd.ecommerce.cart.presentation.dto;
 
-import com.tdd.ecommerce.cart.application.dto.CartRequest;
-
 import java.util.List;
 
-public record CartRequestDto(
+public record CartRequest(
    Long customerId,
-   List<CartRequest> products
+   List<com.tdd.ecommerce.cart.application.dto.CartRequest> products
 ) {}

@@ -3,7 +3,6 @@ package com.tdd.ecommerce.order.application;
 import com.tdd.ecommerce.common.exception.BusinessException;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.customer.infrastructure.Customer;
-import com.tdd.ecommerce.order.domain.OrderProductRepository;
 import com.tdd.ecommerce.order.domain.OrderRepository;
 import com.tdd.ecommerce.order.infrastructure.Order;
 import com.tdd.ecommerce.order.infrastructure.OrderProduct;
