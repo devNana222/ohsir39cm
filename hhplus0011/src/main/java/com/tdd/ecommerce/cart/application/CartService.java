@@ -4,7 +4,7 @@ import com.tdd.ecommerce.cart.application.dto.CartDetailResponse;
 import com.tdd.ecommerce.cart.application.dto.CartInfo;
 import com.tdd.ecommerce.cart.application.dto.CartResult;
 import com.tdd.ecommerce.cart.domain.CartRepository;
-import com.tdd.ecommerce.cart.domain.Cart;
+import com.tdd.ecommerce.cart.domain.entity.Cart;
 import com.tdd.ecommerce.product.domain.ProductInfoDto;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.domain.entity.Product;
