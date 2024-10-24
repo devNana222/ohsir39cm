@@ -2,21 +2,16 @@ package com.tdd.ecommerce.order.presentation;
 
 import com.tdd.ecommerce.common.exception.BusinessException;
 import com.tdd.ecommerce.common.exception.ECommerceExceptions;
-import com.tdd.ecommerce.common.model.CommonApiResponse;
+import com.tdd.ecommerce.common.model.ResponseUtil;
 import com.tdd.ecommerce.order.application.OrderService;
 import com.tdd.ecommerce.order.application.OrderServiceResponse;
 import com.tdd.ecommerce.order.presentation.dto.OrderRequest;
-import com.tdd.ecommerce.order.presentation.dto.OrderResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Tag(
         name = "주문&결제 시스템",
@@ -36,34 +31,30 @@ public class OrderController {
 
 
     @PostMapping
-    public ResponseEntity<CommonApiResponse<?>> createOrder(@RequestBody OrderRequest request) {
+    public ResponseEntity<?> createOrder(@RequestBody OrderRequest request) {
         try{
             List<OrderServiceResponse> serviceResponses = orderService.createOrder(request.getCustomerId(), request.getOrderProducts());
-            CommonApiResponse<List<OrderServiceResponse>> response = new CommonApiResponse<>(true, "주문을 성공하였습니다.🍀 주문정보를 확인하세요.", serviceResponses);
 
-            return ResponseEntity.ok(response);
+            return ResponseUtil.buildSuccessResponse("주문을 성공하였습니다.🍀 주문정보를 확인하세요.", serviceResponses);
         }catch(BusinessException e){
-            CommonApiResponse<ECommerceExceptions> errorResponse = new CommonApiResponse<>(false, e.getMessage(), ECommerceExceptions.FAILED_ORDER);
-
-            return ResponseEntity.badRequest().body(errorResponse);
+            return ResponseUtil.buildErrorResponse(ECommerceExceptions.FAILED_ORDER, ECommerceExceptions.FAILED_ORDER.getMessage());
         }
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<CommonApiResponse<?>> getOrder(@PathVariable Long orderId) {
+    public ResponseEntity<?> getOrder(@PathVariable Long orderId) {
 
         List<OrderServiceResponse> serviceResponses = orderService.getOrderList(orderId);
 
         if(serviceResponses.isEmpty()){
-            CommonApiResponse<ECommerceExceptions> errorResponse = new CommonApiResponse<>(false, "주문 정보를 찾을 수 없습니다.", null);
-
-            return ResponseEntity.badRequest().body(errorResponse);
+            return ResponseUtil.buildErrorResponse(ECommerceExceptions.INVALID_ORDER, ECommerceExceptions.INVALID_ORDER.getMessage());
         }
-
-        CommonApiResponse<List<OrderServiceResponse>> response = new CommonApiResponse<>(true, "주문 정보입니다.", serviceResponses);
-
-        return ResponseEntity.ok(response);
-
+        return ResponseUtil.buildSuccessResponse("주문번호 : "+orderId + "의 주문정보입니다.", serviceResponses);
     }
 
+    @PostMapping("/cart")
+    public ResponseEntity<?> createOrderFromCart(@RequestBody OrderRequest request) {
+        List<OrderServiceResponse> serviceResponses = orderService.createOrderFromCart(request.getCustomerId(), request.getOrderProducts());
+        return ResponseUtil.buildSuccessResponse("장바구니에서 주문을 정상적으로 전송하였습니다.", serviceResponses);
+    }
 }

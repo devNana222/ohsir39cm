@@ -27,15 +27,15 @@ class CustomerServiceTest {
     private CustomerService customerService;
 
     @Test
-    @DisplayName("🟢유효한 고객의 잔액 조회")
+    @DisplayName("🟢유효한 고객의 잔액을 조회하면 10000이 반환된다.")
     void getBalance_SUCCESS() {
         //given
         Customer customer = new Customer(1L, 10000L);
 
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
 
+        //when
         CustomerServiceResponse response = customerService.getCustomerBalance(1L);
-
 
         // then
         assertNotNull(response);
@@ -44,7 +44,7 @@ class CustomerServiceTest {
     }
 
     @Test
-    @DisplayName("🔴 유효하지 않은 고객에 대한 예외")
+    @DisplayName("🔴 유효하지 않은 고객을 조회하면 BusinessException이 발생한다.")
     void getCustomerBalance_InvalidCustomer() {
         // given
         Long customerId = 2L;
@@ -55,7 +55,7 @@ class CustomerServiceTest {
     }
 
     @Test
-    @DisplayName("🟢유효한 고객의 잔액 충전")
+    @DisplayName("🟢유효한 고객의 잔액을 충전하면 충전금액 10000이 반환된다.")
     void chargeBalance_SUCCESS() {
         Customer customer = new Customer( 1L, 10000L);
         Long chargeAmount = 500L;
@@ -68,7 +68,7 @@ class CustomerServiceTest {
         assertEquals(customer.getBalance(), response.getBalance());
     }
     @Test
-    @DisplayName("🔴 유효하지 않은 고객에 대한 예외")
+    @DisplayName("🔴 유효하지 않은 고객의 충전을 시도했을 시 BusinessException이 발생한다.")
     void chargeBalance_INVALIDCUSTOMER() {
         Customer customer = new Customer(1L, 10000L);
         Long chargeAmount = 500L;

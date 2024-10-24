@@ -5,8 +5,10 @@ import com.tdd.ecommerce.cart.application.dto.CartRequest;
 import com.tdd.ecommerce.cart.application.dto.CartResponse;
 import com.tdd.ecommerce.cart.domain.CartRepository;
 import com.tdd.ecommerce.cart.infrastructure.Cart;
+import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.infrastructure.Product;
+import com.tdd.ecommerce.product.infrastructure.ProductInventory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -29,25 +32,27 @@ public class CartServiceTest {
 
     @Mock
     private ProductRepository productRepository;
+    @Mock
+    private ProductInventoryRepository productInventoryRepository;
 
     @InjectMocks
     private CartService cartService;
 
     List<Cart> carts;
 
+    private List<Cart> existingCarts;
+
+    Product product;
+
     @BeforeEach
     void setUp() {
-        carts = new ArrayList<>();
-        Cart cart = Cart.builder()
-                .customerId(1L)
-                .product(new Product(1L, "test", 100L, "etc", null))
-                .amount(1L)
-                .build();
-        carts.add(cart);
+        product = new Product(1L, "Test Product", 1000L, "etc", null);
+        Cart existingCart = new Cart(1L, 1L, 3L, product);  // 초기 수량 3개
+        existingCarts = List.of(existingCart);
     }
 
     @Test
-    @DisplayName("🟢비어있는 장바구니 조회")
+    @DisplayName("🟢비어있는 장바구니를 조회하면 빈 값이 반환된다.")
     void getCartProducts_SUCCESS_EMPTY() {
         Long customerId = 1L;
 
@@ -59,7 +64,7 @@ public class CartServiceTest {
     }
 
     @Test
-    @DisplayName("🟢정상적인 장바구니 조회")
+    @DisplayName("🟢상품 하나를 장바구니에 넣고 장바구니 번호를 조회하면 하나의 상품이 나온다.")
     void getCartProduct_SUCCESS() {
         Long customerId = 1L;
         Product product = new Product(2L, "Product Name2", 100L, "etc", null);
@@ -70,48 +75,65 @@ public class CartServiceTest {
             .amount(1L)
             .build();
         carts.add(cart);
-        // 실제 서비스 메서드 호출
+
         List<CartResponse> result = cartService.getCartProducts(customerId);
 
         // 반환된 결과 검증
         assertEquals(1, result.size());
-        assertEquals(customerId, result.get(0).getCustomerId());
+        assertEquals(customerId, result.getFirst().getCustomerId());
     }
 
     @Test
-    @DisplayName("🔴이미 있는 상품")
+    @DisplayName("🟢이미 있는 상품을 장바구니에 넣으면 합산 개수가 반환된다.")
     void addCartAlreadyExistsProduct() {
+        // given
         Long customerId = 1L;
-        Cart existingCart = Cart.builder()
-                .customerId(1L)
-                .product(new Product())
-                .amount(3L).build();
+        Long productId = 1L;
+        Long addAmount = 2L;
 
-        List<CartRequest> cartRequests = List.of(new CartRequest(1L, 3L));
+        CartRequest cartRequest = new CartRequest(productId, addAmount);
+        List<CartRequest> cartRequests = List.of(cartRequest);
 
-        CartResponse result = cartService.addCartProducts(customerId, cartRequests);
+        // when
+        when(cartRepository.findAllByCustomerId(customerId)).thenReturn(existingCarts);  // 장바구니에 상품이 존재
+        when(productRepository.findByProductId(productId)).thenReturn(product);
 
-        assertEquals(customerId, result.getCustomerId());
+        // 실행
+        CartResponse cartResponse = cartService.addCartProducts(customerId, cartRequests);
+
+        // then
+        // 기존 장바구니 상품의 수량이 3개에서 2개 추가되어 5개가 되는지 확인
+        assertEquals(5L, cartResponse.getProductInfoDtoList().getFirst().getProductAmount());
+
     }
 
     @Test
-    void removeCart_SUCCESS() {
+    @DisplayName("🟢장바구니를 전체 비우면 true가 반환된다.")
+    void removeCart_success() {
+        // given
         Long customerId = 1L;
-        when(cartRepository.findAllByCustomerId(customerId)).thenReturn(carts);
+        List<Cart> cartList = List.of(new Cart());
 
-        cartService.removeCart(customerId);
+        // when
+        when(cartRepository.findAllByCustomerId(customerId)).thenReturn(cartList);
+        boolean result = cartService.removeCart(customerId);
 
+        // then
+        assertTrue(result);
         verify(cartRepository, times(1)).deleteByCustomerId(customerId);
     }
 
     @Test
-    void removeCart_FAIL() {
-        Long customerId = 1L;
+    @DisplayName("🟢존재하지 않는 장바구니를 삭제하면 실행되지않는다.")
+    void removeCart_failure() {
+        // given
+        Long customerId = 2L;
 
-        lenient().when(cartRepository.findAllByCustomerId(customerId)).thenReturn(Collections.emptyList());
-
+        // when
+        when(cartRepository.findAllByCustomerId(customerId)).thenReturn(List.of());
         boolean result = cartService.removeCart(customerId);
 
+        // then
         assertFalse(result);
         verify(cartRepository, never()).deleteByCustomerId(customerId);
     }

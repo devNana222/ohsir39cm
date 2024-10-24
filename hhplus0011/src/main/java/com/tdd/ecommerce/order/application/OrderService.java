@@ -1,6 +1,8 @@
 package com.tdd.ecommerce.order.application;
 
-import com.tdd.ecommerce.common.exception.ECommerceException;
+import com.tdd.ecommerce.cart.domain.CartRepository;
+import com.tdd.ecommerce.cart.infrastructure.Cart;
+import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.customer.infrastructure.Customer;
 import com.tdd.ecommerce.common.exception.BusinessException;
@@ -18,10 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +35,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final DataPlatformInterface dataPlatformInterface;
     private final OrderProductRepository orderProductRepository;
+    private final CartRepository cartRepository;
 
     public List<OrderServiceResponse> getOrderList(Long orderId){
         Optional<Order> order = orderRepository.findById(orderId);
@@ -47,6 +47,7 @@ public class OrderService {
         List<OrderProduct> orderProducts = orderProductRepository.findByOrderId(orderId);
 
         if(orderProducts.isEmpty()){
+            log.warn("Order Product is Empty");
             return Collections.emptyList();
         }
 
@@ -66,7 +67,7 @@ public class OrderService {
         Customer customer = getBalance(customerId);
 
         if(!isEnoughBalance(customerId, totalRequiredBalance)) {
-            throw new BusinessException(ECommerceException.INSUFFICIENCY_BALANCE);
+            throw new BusinessException(ECommerceExceptions.INSUFFICIENCY_BALANCE);
         }
 
         Order newOrder = saveOrder(customerId);
@@ -84,6 +85,17 @@ public class OrderService {
         }
         else
             return Collections.emptyList();
+    }
+
+    @Transactional
+    public List<OrderServiceResponse> createOrderFromCart(Long customerId, List<OrderProduct> orders){
+        List<OrderServiceResponse> result = createOrder(customerId, orders);
+
+        for(OrderProduct op : orders){
+            updateCustomerCart(customerId, op.getProductId(), op.getAmount());
+        }
+
+        return result;
     }
 
     private boolean isEnoughBalance(Long customerId, Long requiredBalance){
@@ -106,7 +118,7 @@ public class OrderService {
             Long requiredStock = order.getAmount();
 
             if(!isEnoughStock(productId, requiredStock)) {
-                throw new BusinessException(ECommerceException.OUT_OF_STOCK);
+                throw new BusinessException(ECommerceExceptions.OUT_OF_STOCK);
             }
 
             Product product = productRepository.findByProductId(productId);
@@ -127,7 +139,7 @@ public class OrderService {
             Long requiredStock = order.getAmount();
 
             ProductInventory inventory = productInventoryRepository.findById(productId).orElseThrow(() ->
-                    new BusinessException(ECommerceException.INVALID_PRODUCT));
+                    new BusinessException(ECommerceExceptions.INVALID_PRODUCT));
 
             inventory.decreaseAmount(requiredStock);
             productInventoryRepository.save(inventory);
@@ -165,5 +177,18 @@ public class OrderService {
                 .collect(Collectors.toList());
 
         return Collections.singletonList(new OrderServiceResponse(orderId, customerId, points, orderProductInfos));
+    }
+
+    private void updateCustomerCart(Long customerId, Long productId, Long amount){
+        Cart cart = cartRepository.findAllByCustomerId(customerId).stream()
+                .filter(c -> c.getProduct().getProductId().equals(productId))
+                .findFirst()
+                .orElseThrow(() -> new BusinessException(ECommerceExceptions.INVALID_PRODUCT));
+
+        cart.changeAmount(amount);
+        if(cart.getAmount() == 0L)
+            cartRepository.deleteCartByCustomerIdAndProductId(customerId, productId);
+        else
+            cartRepository.save(cart);
     }
 }

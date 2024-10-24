@@ -1,12 +1,13 @@
 package com.tdd.ecommerce.product.presentation;
 
 import com.tdd.ecommerce.common.exception.BusinessException;
-import com.tdd.ecommerce.common.exception.ErrorCode;
+import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.common.model.CommonApiResponse;
+import com.tdd.ecommerce.common.model.ResponseUtil;
 import com.tdd.ecommerce.product.application.ProductService;
 import com.tdd.ecommerce.product.application.ProductServiceResponse;
-import com.tdd.ecommerce.product.domain.ProductInfoDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,7 @@ import java.util.List;
 )
 @RestController
 @RequestMapping("/products")
+@Slf4j
 public class ProductStockController {
 
     private final ProductService productService;
@@ -34,29 +36,28 @@ public class ProductStockController {
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<CommonApiResponse<?>> getProductInfo(@PathVariable Long productId) {
+    public ResponseEntity<?> getProductInfo(@PathVariable Long productId) {
         try{
-            List<ProductServiceResponse> products = productService.getProductsByProductId(productId);
+            List<ProductServiceResponse> products = productService.getProductByProductId(productId);
+            log.info("상품 코드 : {}, 상품 정보 : {}", productId, products);
 
-            CommonApiResponse<?> response = new CommonApiResponse<>(true, "조회 성공", products);
-            return ResponseEntity.ok(response);
+            return ResponseUtil.buildSuccessResponse("상품코드 : "+ productId + "의 상품 정보입니다.", products);
         } catch (BusinessException e) {
-            CommonApiResponse<ErrorCode> errorResponse = new CommonApiResponse<>(false, e.getMessage(), e.getErrorCode());
-            return ResponseEntity.badRequest().body(errorResponse);
+            log.warn(ECommerceExceptions.INVALID_PRODUCT.getMessage());
+            return ResponseUtil.buildErrorResponse(ECommerceExceptions.INVALID_PRODUCT, ECommerceExceptions.INVALID_PRODUCT.getMessage());
         }
     }
 
     @GetMapping()
-    public ResponseEntity<CommonApiResponse<?>> getProductsInStock() {
+    public ResponseEntity<?> getProductsInStock() {
         try{
             List<ProductServiceResponse> products = productService.getProducts();
 
-            CommonApiResponse<?> response = new CommonApiResponse<>(true, "현재 재고가 있는 상품들입니다.", products);
-            return ResponseEntity.ok(response);
+            return ResponseUtil.buildSuccessResponse("현재 재고가 있는 상품들입니다.", products);
         }
         catch(BusinessException e){
-            CommonApiResponse<ErrorCode> errorResponse = new CommonApiResponse<>(false, e.getMessage(), e.getErrorCode());
-            return ResponseEntity.badRequest().body(errorResponse);
+            log.warn(ECommerceExceptions.OUT_OF_STOCK.getMessage());
+            return ResponseUtil.buildErrorResponse(ECommerceExceptions.OUT_OF_STOCK, ECommerceExceptions.OUT_OF_STOCK.getMessage());
         }
     }
 }

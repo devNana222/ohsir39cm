@@ -20,11 +20,10 @@ import java.util.List;
 import java.util.Optional;
 
 
+
 @Service
 @Slf4j
 @AllArgsConstructor
-@Transactional
-
 public class CartService {
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;

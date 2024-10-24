@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static com.tdd.ecommerce.common.exception.ECommerceException.*;
+import static com.tdd.ecommerce.common.exception.ECommerceExceptions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -33,8 +33,8 @@ class ProductServiceTest {
 
 
     @Test
-    @DisplayName("🟢상품 코드로 상품 조회")
-    void getProductsByProductId() {
+    @DisplayName("🟢상품 코드로 상품 조회하면 상품은 하나가 나오고 상품의 재고는 20개가 반환된다.")
+    void getProductByProductId() {
         //given
         Product product = new Product(1L, "있는 상품", 100000L, "etc", null);
         ProductInventory inventory = new ProductInventory(1L, 1L, 20L);
@@ -43,23 +43,23 @@ class ProductServiceTest {
         when(productRepository.findByProductId(1L)).thenReturn(product);
         when(productInventoryRepository.findById(1L)).thenReturn(Optional.of(inventory));
 
-        List<ProductServiceResponse> response = productService.getProductsByProductId(1L);
+        List<ProductServiceResponse> response = productService.getProductByProductId(1L);
 
         //then
         assertNotNull(response);
         assertEquals(1, response.size());
-        assertEquals(20L, response.get(0).getAmount());
+        assertEquals(20L, response.getFirst().getAmount());
     }
 
     @Test
-    @DisplayName("🔴 유효하지 않은 상품 조회")
+    @DisplayName("🔴 유효하지 않은 상품 조회하면 INVALID_PRODUCT Exception이 발생한다.")
     void getProductByProductId_INVALIDPRODUCT() {
         //when
         when(productRepository.findByProductId(1L)).thenReturn(null);
 
         //then
         BusinessException exception = assertThrows(BusinessException.class, () -> {
-            productService.getProductsByProductId(1L);
+            productService.getProductByProductId(1L);
         });
 
         assertEquals(INVALID_PRODUCT.getMessage(), exception.getMessage());
@@ -67,7 +67,7 @@ class ProductServiceTest {
     }
 
     @Test
-    @DisplayName("🔴 재고 없는 상품 조회")
+    @DisplayName("🔴 재고 없는 상품 조회하면 OUT_OF_STOCK Exception이 발생한다.")
     void getProductByProductId_OUTOFSTOCK() {
         // given
         Product product = new Product(1L, "재고 없는 상품", 100000L, "etc", null);
@@ -79,7 +79,7 @@ class ProductServiceTest {
 
         //then
         BusinessException exception = assertThrows(BusinessException.class, () -> {
-            productService.getProductsByProductId(1L);
+            productService.getProductByProductId(1L);
         });
 
         assertEquals(OUT_OF_STOCK.getMessage(), exception.getMessage());
@@ -87,7 +87,7 @@ class ProductServiceTest {
     }
 
     @Test
-    @DisplayName("🟢재고가 있는 상품들을 조회")
+    @DisplayName("🟢재고가 있는 상품 1L만 조회된다.")
     void getProducts() {
         // given
         List<Product> products = List.of(
@@ -100,13 +100,13 @@ class ProductServiceTest {
 
         // when
         when(productInventoryRepository.findProductsByAmountGreaterThanZero()).thenReturn(inventories);
-        when(productRepository.findByProductId(1L)).thenReturn(products.get(0)); // 재고가 있는 상품
+        when(productRepository.findByProductId(1L)).thenReturn(products.getFirst()); // 재고가 있는 상품
 
         List<ProductServiceResponse> response = productService.getProducts();
 
         // then
         assertNotNull(response);
         assertEquals(1, response.size());
-        assertEquals("재고있는상품", response.get(0).getProductName());
+        assertEquals("재고있는상품", response.getFirst().getProductName());
     }
 }

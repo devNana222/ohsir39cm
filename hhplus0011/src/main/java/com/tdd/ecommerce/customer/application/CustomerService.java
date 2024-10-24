@@ -1,9 +1,9 @@
 package com.tdd.ecommerce.customer.application;
 
+import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.customer.infrastructure.Customer;
 import com.tdd.ecommerce.common.exception.BusinessException;
-import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

@@ -5,8 +5,6 @@ import com.tdd.ecommerce.product.infrastructure.Product;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Entity
 @Getter
 @Builder
@@ -31,8 +29,16 @@ public class Cart extends TimeStamped {
     private Product product;
 
     public void addCartAmount(Long amount){
-        if(amount < 0 && this.amount < -amount)
+        if(amount < 0L && this.amount < -amount)
             throw new IllegalArgumentException("수량을 올바르게 입력하세요.");
+
         this.amount += amount;
+    }
+
+    public void changeAmount(Long amount){
+        if(this.amount - amount < 0L)
+            this.amount = 0L;
+        else
+            this.amount -= amount;
     }
 }

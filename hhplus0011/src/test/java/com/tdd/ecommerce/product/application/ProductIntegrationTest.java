@@ -1,7 +1,7 @@
 package com.tdd.ecommerce.product.application;
 
 import com.tdd.ecommerce.common.exception.BusinessException;
-import com.tdd.ecommerce.common.exception.ECommerceException;
+import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.infrastructure.Product;
@@ -19,6 +19,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
@@ -35,71 +36,61 @@ public class ProductIntegrationTest {
     @Autowired
     private ProductInventoryRepository productInventoryRepository;
 
-    private Long customerId;
-    private Long productId;
-    private Long inventoryId;
 
     @BeforeEach
     void setUp() {
-        Product product = new Product(1L, "Test Product", 10000L,"etc", null); // 가격 10,000
-        productId = productRepository.save(product).getProductId();
+        //재고 있는 상품
+        Long productId = productRepository.save(new Product(1L, "Test Product", 10000L, "etc", null)).getProductId();
+        productInventoryRepository.save(new ProductInventory(null, productId, 100L));
 
-        ProductInventory inventory = new ProductInventory(inventoryId, productId, 100L); // 재고 100
-        inventoryId = productInventoryRepository.save(inventory).getId();
+        //재고 없는 상품
+        Long productId2 = productRepository.save(new Product(2L, "Test Product", 10000L, "etc", null)).getProductId();
+        productInventoryRepository.save(new ProductInventory(null, productId2, 0L));
+
     }
 
+
     @Test
-    @DisplayName("🟢상품 번호로 상품정보 가져오기")
+    @DisplayName("🟢상품 번호1을 입력하면 상품번호 1번에 대한 정보 하나를 가져오고, 가져온 정보의 상품번호도 1번이다.")
     void getProductByProductId_SUCCESS() throws Exception {
         Long productId = 1L;
 
-        List<ProductServiceResponse> productServiceResponses = sut.getProductsByProductId(productId);
+        List<ProductServiceResponse> productServiceResponses = sut.getProductByProductId(productId);
 
         assertThat(productServiceResponses.size()).isEqualTo(1);
-        assertThat(productServiceResponses.get(0).getProductId()).isEqualTo(productId);
+        assertThat(productServiceResponses.getFirst().getProductId()).isEqualTo(productId);
 
     }
 
     @Test
-    @DisplayName("🔴없는 상품 조회")
+    @DisplayName("🔴없는 상품 조회하면 INVALID_PRODUCT Exception이 발생한다.")
     void getProductByProductId_FAIL() throws Exception {
         Long productId = 100L;
 
-        assertThatThrownBy(() -> sut.getProductsByProductId(productId))
+        assertThatThrownBy(() -> sut.getProductByProductId(productId))
                 .isInstanceOf(BusinessException.class)
-                .hasMessage(ECommerceException.INVALID_PRODUCT.getMessage());
+                .hasMessage(ECommerceExceptions.INVALID_PRODUCT.getMessage());
     }
 
     @Test
-    @DisplayName("🔴재고 없는 상품 조회")
+    @DisplayName("🔴재고 없는 상품 조회하면 OUT_OF_STOCK Exception이 발생한다. ")
     void getProduct_OUT_OF_STOCK() throws Exception {
-        Long amount = 0L;
-
-        Product product = new Product(null, "테스트상품", 100L, "etc", null);
-        Long savedProductId = saveProduct(product).getProductId();
-
-        ProductInventory inventory = new ProductInventory(null, savedProductId,amount);
-        saveProductInventory(inventory);
-
-        assertThatThrownBy(() -> sut.getProductsByProductId(savedProductId).getFirst())
+        //given
+        Long productId = 2L;
+        //when&then
+        assertThatThrownBy(() -> sut.getProductByProductId(productId).getFirst())
                 .isInstanceOf(BusinessException.class)
-                .hasMessage(ECommerceException.OUT_OF_STOCK.getMessage());
-
+                .hasMessage(ECommerceExceptions.OUT_OF_STOCK.getMessage());
     }
 
     @Test
-    @DisplayName("🟢재고가 있는 전체 상품 조회")
+    @DisplayName("🟢getProducts를 조회하면 현재 재고가 있는 상품만 조회한다.")
     void getProducts_SUCCESS() throws Exception {
+        //given
+        //when
         List<ProductServiceResponse> responses = sut.getProducts();
 
-        assertTrue(responses.get(0).getAmount() > 0);
-    }
-
-    private Product saveProduct(Product product) {
-        return productRepository.save(product);
-    }
-
-    private ProductInventory saveProductInventory(ProductInventory productInventory) {
-        return productInventoryRepository.save(productInventory);
+        //then
+        assertEquals(1, responses.size());
     }
 }

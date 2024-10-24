@@ -16,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -63,7 +62,7 @@ public class RankingIntegrationTest {
     }
 
     @Test
-    @DisplayName("🟢 정상적인 판매 순위 조회")
+    @DisplayName("🟢첫번째 반환된 상품의 판매 개수는 두번째 반환된 상품의 판매 개수보다 많다.")
     void getThreeDaysRanking_INTEGRATION_TEST() throws Exception {
         // given
         LocalDateTime date = LocalDateTime.now();

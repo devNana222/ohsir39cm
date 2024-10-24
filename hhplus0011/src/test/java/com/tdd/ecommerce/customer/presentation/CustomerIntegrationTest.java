@@ -1,7 +1,7 @@
 package com.tdd.ecommerce.customer.presentation;
 
 import com.tdd.ecommerce.common.exception.BusinessException;
-import com.tdd.ecommerce.common.exception.ECommerceException;
+import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.customer.application.CustomerService;
 import com.tdd.ecommerce.customer.application.CustomerServiceResponse;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
@@ -27,7 +27,7 @@ public class CustomerIntegrationTest {
     CustomerRepository customerRepository;
 
     @Test
-    @DisplayName("🟢고객 1명의 포인트 가져오기")
+    @DisplayName("🟢고객 한명의 포인트를 조회하면 1000이 반환된다.")
     void getCustomerBalance_SUCCESS() {
         //given
         Long customerId = customerRepository.save(new Customer(null, 1000L)).getCustomerId();
@@ -42,7 +42,7 @@ public class CustomerIntegrationTest {
     }
 
     @Test
-    @DisplayName("🔴없는 고객의 포인트 조회")
+    @DisplayName("🔴없는 고객의 포인트 조회하면 INVALID_CUSTOMER이 발생한다.")
     void getCustomerBalance_INVALID_CUSTOMER() {
         //given
         Long customerId = 40L;
@@ -51,26 +51,27 @@ public class CustomerIntegrationTest {
         //when & then
         assertThatThrownBy(() -> sut.getCustomerBalance(customerId))
                 .isInstanceOf(BusinessException.class)
-                .hasMessageContaining(ECommerceException.INVALID_CUSTOMER.getMessage());
+                .hasMessageContaining(ECommerceExceptions.INVALID_CUSTOMER.getMessage());
 
     }
 
     @Test
-    @DisplayName("🟢고객 포인트 충전")
+    @DisplayName("🟢고객 포인트 충전을 성공하면 합산된 포인트 11000이 반환된다. ")
     void chargeBalance_SUCCESS(){
-        Long customerId = 4L;
-        Long chargeAmount = 100000L;
+        //given
+        Long customerId = customerRepository.save(new Customer(null, 1000L)).getCustomerId();
+        Long chargeAmount = 10000L;
 
         CustomerServiceResponse result = sut.chargeCustomerBalance(customerId, chargeAmount);
 
         assertThat(result).isNotNull();
         assertThat(result.getCustomerId()).isEqualTo(customerId);
-        assertThat(result.getBalance()).isEqualTo(chargeAmount);
+        assertThat(result.getBalance()).isEqualTo(chargeAmount+1000L);
 
     }
 
     @Test
-    @DisplayName("🔴없는 고객에 대한 충전")
+    @DisplayName("🔴없는 고객에 대한 충전을 시도할 시 INVALID_CUSTOMER 예외가 발생한다.")
     void chargeBalance_INVALID_USER(){
         Long customerId = 400L;
         Long chargeAmount = 5L;
@@ -78,7 +79,7 @@ public class CustomerIntegrationTest {
         //when&then
         assertThatThrownBy(() -> sut.chargeCustomerBalance(customerId, chargeAmount))
                 .isInstanceOf(BusinessException.class)
-                .hasMessageContaining(ECommerceException.INVALID_CUSTOMER.getMessage());
+                .hasMessageContaining(ECommerceExceptions.INVALID_CUSTOMER.getMessage());
 
     }
     //예외 객체의 경우, 동일한 예외 클래스와 메시지가 발생하더라도 객체 비교는 서로 다른 인스턴스로 취급됨.

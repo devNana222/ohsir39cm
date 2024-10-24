@@ -2,7 +2,7 @@ package com.tdd.ecommerce.customer.infrastructure;
 
 import com.tdd.ecommerce.common.domain.TimeStamped;
 import com.tdd.ecommerce.common.exception.BusinessException;
-import com.tdd.ecommerce.common.exception.ECommerceException;
+import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +27,7 @@ public class Customer extends TimeStamped {
 
     public Long chargeBalance(Long amount) {
         if(amount < 0)
-            throw new BusinessException(ECommerceException.INVALID_AMOUNT);
+            throw new BusinessException(ECommerceExceptions.INVALID_AMOUNT);
         return this.balance += amount;
     }
 

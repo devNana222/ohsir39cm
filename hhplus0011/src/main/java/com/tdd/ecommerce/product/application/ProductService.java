@@ -26,7 +26,7 @@ public class ProductService {
         this.productInventoryRepository = productInventoryRepository;
     }
 
-    public List<ProductServiceResponse> getProductsByProductId(Long productId) {
+    public List<ProductServiceResponse> getProductByProductId(Long productId) {
         Product product = productRepository.findByProductId(productId);
 
         if(product == null)
@@ -35,7 +35,7 @@ public class ProductService {
         Optional<ProductInventory> productInventory = productInventoryRepository.findById(productId);
 
         if (productInventory.isEmpty() || productInventory.get().getAmount() <= 0) {
-            throw new BusinessException(ECommerceExceptions.OUT_OF_STOCK); // 재고가 없을 경우 예외 발생
+            throw new BusinessException(ECommerceExceptions.OUT_OF_STOCK);
         }
 
         ProductServiceResponse response = new ProductServiceResponse(
@@ -53,7 +53,7 @@ public class ProductService {
         List<ProductInventory> productInventories = productInventoryRepository.findProductsByAmountGreaterThanZero();
 
         if (productInventories == null) {
-            throw new BusinessException(ECommerceExceptions.OUT_OF_STOCK); // 재고가 없을 경우 예외 발생
+            throw new BusinessException(ECommerceExceptions.OUT_OF_STOCK);
         }
 
         return productInventories.stream()

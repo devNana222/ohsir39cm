@@ -1,9 +1,7 @@
 package com.tdd.ecommerce.event.presentation;
 
-import com.tdd.ecommerce.common.exception.BusinessException;
 import com.tdd.ecommerce.common.exception.ECommerceExceptions;
-import com.tdd.ecommerce.common.exception.ErrorCode;
-import com.tdd.ecommerce.common.model.CommonApiResponse;
+import com.tdd.ecommerce.common.model.ResponseUtil;
 import com.tdd.ecommerce.event.application.RankingService;
 import com.tdd.ecommerce.event.application.dto.RankingResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,18 +30,18 @@ public class RankingController {
     }
 
     @GetMapping("/{today}")
-    public ResponseEntity<CommonApiResponse<?>> getTopRank(@PathVariable("today") String today) {
+    public ResponseEntity<?> getTopRank(@PathVariable("today") String today) {
         LocalDateTime dateFormat;
         try{
             dateFormat = LocalDate.parse(today).atStartOfDay();
         } catch (DateTimeParseException e) {
-            CommonApiResponse<ErrorCode> errorResponse = new CommonApiResponse<>(false, e.getMessage(), ECommerceExceptions.INVALID_DATE);
 
-            return ResponseEntity.badRequest().body(errorResponse);
+           return ResponseUtil.buildErrorResponse(ECommerceExceptions.INVALID_DATE, "잘못된 날짜 형식입니다.");
         }
+
         List<RankingResponse> ranking = rankingService.getThreeDaysRanking(dateFormat);
-        CommonApiResponse<?> response = new CommonApiResponse<>(true, today + " 기준 판매 순위 TOP 5입니다.", ranking);
-        return ResponseEntity.ok(response);
+
+        return ResponseUtil.buildSuccessResponse(today + " 기준 판매 순위 TOP 5입니다.", ranking);
     }
 
 }
