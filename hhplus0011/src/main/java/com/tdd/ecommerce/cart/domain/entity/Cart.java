@@ -1,4 +1,4 @@
-package com.tdd.ecommerce.cart.domain;
+package com.tdd.ecommerce.cart.domain.entity;
 
 import com.tdd.ecommerce.common.domain.TimeStamped;
 import com.tdd.ecommerce.product.domain.entity.Product;

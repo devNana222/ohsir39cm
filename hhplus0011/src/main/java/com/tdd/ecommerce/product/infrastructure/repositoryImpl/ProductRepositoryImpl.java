@@ -18,4 +18,14 @@ public class ProductRepositoryImpl implements ProductRepository {
     public Product findByProductId(Long productId){
         return productJpaRepository.findByProductId(productId);
     }
+
+    @Override
+    public Product save(Product product) {
+        return productJpaRepository.save(product);
+    }
+
+    @Override
+    public void saveAll(Iterable<Product> products) {
+        productJpaRepository.saveAll(products);
+    }
 }

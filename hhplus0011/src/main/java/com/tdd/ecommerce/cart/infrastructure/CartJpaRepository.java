@@ -1,6 +1,6 @@
 package com.tdd.ecommerce.cart.infrastructure;
 
-import com.tdd.ecommerce.cart.domain.Cart;
+import com.tdd.ecommerce.cart.domain.entity.Cart;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

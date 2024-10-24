@@ -1,5 +1,7 @@
 package com.tdd.ecommerce.cart.domain;
 
+import com.tdd.ecommerce.cart.domain.entity.Cart;
+
 import java.util.List;
 
 public interface CartRepository {

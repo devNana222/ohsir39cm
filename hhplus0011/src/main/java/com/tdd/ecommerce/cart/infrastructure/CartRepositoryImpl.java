@@ -1,6 +1,6 @@
 package com.tdd.ecommerce.cart.infrastructure;
 
-import com.tdd.ecommerce.cart.domain.Cart;
+import com.tdd.ecommerce.cart.domain.entity.Cart;
 import com.tdd.ecommerce.cart.domain.CartRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
