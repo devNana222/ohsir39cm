@@ -1,7 +1,8 @@
 package com.tdd.ecommerce.order.application;
 
 import com.tdd.ecommerce.cart.domain.CartRepository;
-import com.tdd.ecommerce.cart.domain.Cart;
+
+import com.tdd.ecommerce.cart.domain.entity.Cart;
 import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.customer.domain.Customer;
