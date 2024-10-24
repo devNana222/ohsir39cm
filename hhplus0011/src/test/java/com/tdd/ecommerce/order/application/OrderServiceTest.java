@@ -1,5 +1,7 @@
 package com.tdd.ecommerce.order.application;
 
+import com.tdd.ecommerce.cart.domain.entity.Cart;
+import com.tdd.ecommerce.cart.domain.CartRepository;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.customer.domain.Customer;
 import com.tdd.ecommerce.common.exception.BusinessException;
@@ -42,21 +44,28 @@ class OrderServiceTest {
     private OrderRepository orderRepository;
 
     @Mock
+    private CartRepository cartRepository;
+
+    @Mock
     private DataPlatformInterface dataPlatformInterface;
 
     @Mock
     private OrderProductRepository orderProductRepository;
 
     @InjectMocks
-    private OrderService orderService;
+    private OrderService sut;
 
     Product product1;
     Product product2;
+    private List<Cart> existingCarts;
 
     @BeforeEach
     public void setUp() {
         product1 = new Product(1L,"테스트 1", 30000L, "etc", null);
         product2 = new Product(2L,"테스트 2", 20000L, "etc", null);
+
+        Cart existingCart = new Cart(1L, 1L, 3L, product1);
+        existingCarts = List.of(existingCart);
     }
 
     @Test
@@ -74,7 +83,7 @@ class OrderServiceTest {
         when(productRepository.findByProductId(2L)).thenReturn(product2);
 
         //when
-        List<OrderServiceResponse> orderInfo = orderService.getOrderList(orderId);
+        List<OrderServiceResponse> orderInfo = sut.getOrderList(orderId);
 
         //then
         assertEquals(130000L, orderInfo.getFirst().getBalance());
@@ -89,7 +98,7 @@ class OrderServiceTest {
         when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
 
         // when
-        List<OrderServiceResponse> orderInfo = orderService.getOrderList(orderId);
+        List<OrderServiceResponse> orderInfo = sut.getOrderList(orderId);
 
         // then
         assertTrue(orderInfo.isEmpty());
@@ -106,7 +115,7 @@ class OrderServiceTest {
         when(orderProductRepository.findByOrderId(orderId)).thenReturn(Collections.emptyList());
 
         // when
-        List<OrderServiceResponse> orderInfo = orderService.getOrderList(orderId);
+        List<OrderServiceResponse> orderInfo = sut.getOrderList(orderId);
 
         // then
         assertTrue(orderInfo.isEmpty());
@@ -131,7 +140,7 @@ class OrderServiceTest {
         when(dataPlatformInterface.sendOrderMessage(anyList())).thenReturn(true);
 
         //when
-        List<OrderServiceResponse> response = orderService.createOrder(orderId, orderProducts);
+        List<OrderServiceResponse> response = sut.createOrder(orderId, orderProducts);
 
         //then
         assertFalse(response.isEmpty());
@@ -152,7 +161,7 @@ class OrderServiceTest {
         when(productInventoryRepository.findById(1L)).thenReturn(Optional.of(inventory));
 
         //when & then
-        assertThrows(BusinessException.class, () -> orderService.createOrder(1L, orderProducts));
+        assertThrows(BusinessException.class, () -> sut.createOrder(1L, orderProducts));
 
     }
 
@@ -172,7 +181,23 @@ class OrderServiceTest {
         when(productInventoryRepository.findById(1L)).thenReturn(Optional.of(inventory));
 
         // when & then
-        assertThrows(BusinessException.class, () -> orderService.createOrder(customerId, orderProducts));
+        assertThrows(BusinessException.class, () -> sut.createOrder(customerId, orderProducts));
 
     }
+
+//    @Test
+//    @DisplayName("🟢장바구니에 있는 물품을 주문하면 장바구니에서 개수가 감소한다.")
+//    void orderFromCart_SUCCESS() {
+//        // given
+//        Long customerId = 1L;
+//        List<OrderProduct> orderProducts = List.of(new OrderProduct(null, 1L, 1L, 2L, 10000L));
+//        when(cartRepository.findAllByCustomerId(customerId)).thenReturn(existingCarts);
+//
+//        // when
+//        sut.createOrderFromCart(customerId, orderProducts);
+//
+//        // then
+//        assertEquals(1L, existingCarts.getFirst().getAmount());
+//        assertEquals()
+//    }
 }

@@ -1,10 +1,10 @@
 package com.tdd.ecommerce.cart;
 
-import com.tdd.ecommerce.cart.application.CartService;
+import com.tdd.ecommerce.cart.domain.CartService;
 import com.tdd.ecommerce.cart.application.dto.CartInfo;
 import com.tdd.ecommerce.cart.application.dto.CartResult;
 import com.tdd.ecommerce.cart.domain.CartRepository;
-import com.tdd.ecommerce.cart.domain.Cart;
+import com.tdd.ecommerce.cart.domain.entity.Cart;
 import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.domain.entity.Product;
@@ -121,7 +121,7 @@ public class CartServiceTest {
     }
 
     @Test
-    @DisplayName("🟢존재하지 않는 장바구니를 삭제하면 실행되지않는다.")
+    @DisplayName("🔴존재하지 않는 장바구니를 삭제하면 실행되지않는다.")
     void removeCart_failure() {
         // given
         Long customerId = 2L;
