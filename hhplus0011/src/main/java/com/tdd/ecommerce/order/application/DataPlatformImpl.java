@@ -1,6 +1,6 @@
 package com.tdd.ecommerce.order.application;
 
-import com.tdd.ecommerce.order.infrastructure.OrderProduct;
+import com.tdd.ecommerce.order.domain.OrderProduct;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

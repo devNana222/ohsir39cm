@@ -1,17 +1,16 @@
 package com.tdd.ecommerce.cart.application;
 
 import com.tdd.ecommerce.cart.application.dto.CartDetailResponse;
-import com.tdd.ecommerce.cart.application.dto.CartRequest;
-import com.tdd.ecommerce.cart.application.dto.CartResponse;
+import com.tdd.ecommerce.cart.application.dto.CartInfo;
+import com.tdd.ecommerce.cart.application.dto.CartResult;
 import com.tdd.ecommerce.cart.domain.CartRepository;
-import com.tdd.ecommerce.cart.infrastructure.Cart;
+import com.tdd.ecommerce.cart.domain.Cart;
 import com.tdd.ecommerce.product.domain.ProductInfoDto;
 import com.tdd.ecommerce.product.domain.ProductRepository;
-import com.tdd.ecommerce.product.infrastructure.Product;
+import com.tdd.ecommerce.product.domain.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,11 +28,11 @@ public class CartService {
     private final ProductRepository productRepository;
 
 
-    public List<CartResponse> getCartProducts(Long customerId){
+    public List<CartResult> getCartProducts(Long customerId){
 
         List<Cart> cartList = getCartList(customerId).isEmpty() ? Collections.emptyList() : getCartList(customerId);
 
-        List<CartResponse> cartResponses = new ArrayList<>();
+        List<CartResult> cartResponse = new ArrayList<>();
         List<CartDetailResponse> detailResponse = new ArrayList<>();
 
         for(Cart cart : cartList){
@@ -42,38 +41,37 @@ public class CartService {
             CartDetailResponse cartDetailResponse = new CartDetailResponse(pid, cart.getAmount());
             detailResponse.add(cartDetailResponse);
         }
-        CartResponse cartResponse = new CartResponse(customerId, detailResponse, LocalDateTime.now());
-        cartResponses.add(cartResponse);
-        return cartResponses;
+        CartResult cartResult = new CartResult(customerId, detailResponse, LocalDateTime.now());
+        cartResponse.add(cartResult);
+        return cartResponse;
     }
 
-    public CartResponse addCartProducts(Long customerId, List<CartRequest> cartRequests) {
+    public CartResult addCartProducts(Long customerId, List<CartInfo> cartInfos) {
 
         List<Cart> carts = getCartList(customerId);
 
         List<CartDetailResponse> responseProduct = new ArrayList<>();
 
-        for (CartRequest cr : cartRequests) {
-            if (carts.isEmpty()) {
+        for (CartInfo cr : cartInfos) {
+            Optional<Cart> exists = carts.stream()
+                    .filter(c -> c.getProduct().getProductId().equals(cr.productId()))
+                    .findFirst();
 
+            if (exists.isPresent()) {
+
+                Cart existingCart = exists.get();
+                existingCart.addCartAmount(cr.amount());
+                log.info(existingCart.toString());
+                cartRepository.save(existingCart);
+                responseProduct.add(setProductDetail(cr.productId(), existingCart.getAmount()));
+            } else {
+                // 카트에 물품이 존재하지 않을 경우 새롭게 추가
                 addProductsToCart(customerId, cr.productId(), cr.amount());
                 responseProduct.add(setProductDetail(cr.productId(), cr.amount()));
             }
-            else{
-                Optional<Cart> exists = carts.stream()
-                        .filter(c -> c.getProduct().getProductId().equals(cr.productId()))
-                        .findFirst();
-
-                exists.ifPresentOrElse(
-                        cart -> cart.addCartAmount(cr.amount()),
-                        () -> addProductsToCart(customerId, cr.productId(), cr.amount())
-                );
-
-                responseProduct.add(setProductDetail(cr.productId(), exists.get().getAmount()));
-            }
-
         }
-        return new CartResponse(
+
+        return new CartResult(
                 customerId,
                 responseProduct,
                 LocalDateTime.now()

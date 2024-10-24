@@ -1,14 +1,13 @@
 package com.tdd.ecommerce.cart;
 
 import com.tdd.ecommerce.cart.application.CartService;
-import com.tdd.ecommerce.cart.application.dto.CartRequest;
-import com.tdd.ecommerce.cart.application.dto.CartResponse;
+import com.tdd.ecommerce.cart.application.dto.CartInfo;
+import com.tdd.ecommerce.cart.application.dto.CartResult;
 import com.tdd.ecommerce.cart.domain.CartRepository;
-import com.tdd.ecommerce.cart.infrastructure.Cart;
+import com.tdd.ecommerce.cart.domain.Cart;
 import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
-import com.tdd.ecommerce.product.infrastructure.Product;
-import com.tdd.ecommerce.product.infrastructure.ProductInventory;
+import com.tdd.ecommerce.product.domain.entity.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,9 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -76,7 +73,7 @@ public class CartServiceTest {
             .build();
         carts.add(cart);
 
-        List<CartResponse> result = cartService.getCartProducts(customerId);
+        List<CartResult> result = cartService.getCartProducts(customerId);
 
         // 반환된 결과 검증
         assertEquals(1, result.size());
@@ -91,19 +88,19 @@ public class CartServiceTest {
         Long productId = 1L;
         Long addAmount = 2L;
 
-        CartRequest cartRequest = new CartRequest(productId, addAmount);
-        List<CartRequest> cartRequests = List.of(cartRequest);
+        CartInfo cartInfo = new CartInfo(productId, addAmount);
+        List<CartInfo> cartInfos = List.of(cartInfo);
 
         // when
         when(cartRepository.findAllByCustomerId(customerId)).thenReturn(existingCarts);  // 장바구니에 상품이 존재
         when(productRepository.findByProductId(productId)).thenReturn(product);
 
         // 실행
-        CartResponse cartResponse = cartService.addCartProducts(customerId, cartRequests);
+        CartResult cartResult = cartService.addCartProducts(customerId, cartInfos);
 
         // then
         // 기존 장바구니 상품의 수량이 3개에서 2개 추가되어 5개가 되는지 확인
-        assertEquals(5L, cartResponse.getProductInfoDtoList().getFirst().getProductAmount());
+        assertEquals(5L, cartResult.getProductInfoDtoList().getFirst().getProductAmount());
 
     }
 

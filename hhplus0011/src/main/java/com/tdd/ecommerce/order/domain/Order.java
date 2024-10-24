@@ -1,4 +1,4 @@
-package com.tdd.ecommerce.order.infrastructure;
+package com.tdd.ecommerce.order.domain;
 
 import com.tdd.ecommerce.common.domain.TimeStamped;
 import jakarta.persistence.*;

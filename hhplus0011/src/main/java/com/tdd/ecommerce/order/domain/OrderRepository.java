@@ -1,10 +1,10 @@
 package com.tdd.ecommerce.order.domain;
 
-import com.tdd.ecommerce.order.infrastructure.Order;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.List;
+import java.util.Optional;
 
-@Repository
-public interface OrderRepository extends JpaRepository<Order, Long> {
-
+public interface OrderRepository {
+    Optional<Order> findById(Long orderId);
+    Order save(Order order);
+    void saveAll(List<Order> orders);
 }

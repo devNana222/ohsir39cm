@@ -1,4 +1,4 @@
-package com.tdd.ecommerce.customer.infrastructure;
+package com.tdd.ecommerce.customer.domain;
 
 import com.tdd.ecommerce.common.domain.TimeStamped;
 import com.tdd.ecommerce.common.exception.BusinessException;

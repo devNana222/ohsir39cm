@@ -1,19 +1,19 @@
 package com.tdd.ecommerce.order.application;
 
 import com.tdd.ecommerce.cart.domain.CartRepository;
-import com.tdd.ecommerce.cart.infrastructure.Cart;
+import com.tdd.ecommerce.cart.domain.Cart;
 import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
-import com.tdd.ecommerce.customer.infrastructure.Customer;
+import com.tdd.ecommerce.customer.domain.Customer;
 import com.tdd.ecommerce.common.exception.BusinessException;
 import com.tdd.ecommerce.order.domain.OrderProductRepository;
 import com.tdd.ecommerce.order.domain.OrderRepository;
-import com.tdd.ecommerce.order.infrastructure.Order;
-import com.tdd.ecommerce.order.infrastructure.OrderProduct;
+import com.tdd.ecommerce.order.domain.Order;
+import com.tdd.ecommerce.order.domain.OrderProduct;
 import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
-import com.tdd.ecommerce.product.infrastructure.Product;
-import com.tdd.ecommerce.product.infrastructure.ProductInventory;
+import com.tdd.ecommerce.product.domain.entity.Product;
+import com.tdd.ecommerce.product.domain.entity.ProductInventory;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -180,15 +180,20 @@ public class OrderService {
     }
 
     private void updateCustomerCart(Long customerId, Long productId, Long amount){
-        Cart cart = cartRepository.findAllByCustomerId(customerId).stream()
+        Optional<Cart> cart = cartRepository.findAllByCustomerId(customerId).stream()
                 .filter(c -> c.getProduct().getProductId().equals(productId))
-                .findFirst()
-                .orElseThrow(() -> new BusinessException(ECommerceExceptions.INVALID_PRODUCT));
+                .findFirst();
 
-        cart.changeAmount(amount);
-        if(cart.getAmount() == 0L)
-            cartRepository.deleteCartByCustomerIdAndProductId(customerId, productId);
-        else
-            cartRepository.save(cart);
+        if (cart.isPresent()) {
+            Cart existingCart = cart.get();
+
+            existingCart.changeAmount(amount);
+
+            if (existingCart.getAmount() <= 0L) {
+                cartRepository.deleteCartByCustomerIdAndProductId(customerId, productId);
+            } else {
+                cartRepository.save(existingCart);
+            }
+        }
     }
 }

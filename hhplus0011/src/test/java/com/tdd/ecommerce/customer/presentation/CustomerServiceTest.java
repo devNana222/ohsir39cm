@@ -3,7 +3,7 @@ package com.tdd.ecommerce.customer.presentation;
 import com.tdd.ecommerce.customer.application.CustomerService;
 import com.tdd.ecommerce.customer.application.CustomerServiceResponse;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
-import com.tdd.ecommerce.customer.infrastructure.Customer;
+import com.tdd.ecommerce.customer.domain.Customer;
 import com.tdd.ecommerce.common.exception.BusinessException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

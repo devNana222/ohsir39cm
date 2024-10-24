@@ -4,8 +4,8 @@ import com.tdd.ecommerce.common.exception.BusinessException;
 import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
-import com.tdd.ecommerce.product.infrastructure.Product;
-import com.tdd.ecommerce.product.infrastructure.ProductInventory;
+import com.tdd.ecommerce.product.domain.entity.Product;
+import com.tdd.ecommerce.product.domain.entity.ProductInventory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

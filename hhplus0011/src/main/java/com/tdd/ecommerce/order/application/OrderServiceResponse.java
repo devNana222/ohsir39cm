@@ -1,6 +1,5 @@
 package com.tdd.ecommerce.order.application;
 
-import com.tdd.ecommerce.order.infrastructure.OrderProduct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

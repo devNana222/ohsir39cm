@@ -1,31 +1,33 @@
-package com.tdd.ecommerce.product.infrastructure;
+package com.tdd.ecommerce.order.domain;
 
 import com.tdd.ecommerce.common.domain.TimeStamped;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="product_inventory")
-public class ProductInventory extends TimeStamped {
+@Table(name="order_product")
+public class OrderProduct extends TimeStamped {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
     private Long id;
 
-    @Column(unique = true, nullable = false, name="product_id")
+    @Column(name="order_id")
+    private Long orderId;
+
+    @Column(name="product_id")
     private Long productId;
 
     @Column(name="amount")
     private Long amount;
 
-    public void decreaseAmount(Long amount) {
-        this.amount -= amount;
-    }
+    @Column(name="price")
+    private Long price;
+
 }

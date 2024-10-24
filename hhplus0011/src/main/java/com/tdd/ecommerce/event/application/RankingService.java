@@ -4,7 +4,7 @@ import com.tdd.ecommerce.event.application.dto.RankingResponse;
 import com.tdd.ecommerce.event.domain.Ranking;
 import com.tdd.ecommerce.event.domain.RankingRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
-import com.tdd.ecommerce.product.infrastructure.Product;
+import com.tdd.ecommerce.product.domain.entity.Product;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 

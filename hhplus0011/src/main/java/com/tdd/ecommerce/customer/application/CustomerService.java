@@ -2,7 +2,7 @@ package com.tdd.ecommerce.customer.application;
 
 import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
-import com.tdd.ecommerce.customer.infrastructure.Customer;
+import com.tdd.ecommerce.customer.domain.Customer;
 import com.tdd.ecommerce.common.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,6 @@ public class CustomerService {
 
         Long newBalance = customer.get().chargeBalance(chargeAmount);
 
-        // 변경된 엔티티를 저장합니다.
         customerRepository.save(customer.get());
 
         return new CustomerServiceResponse(customerId, newBalance);

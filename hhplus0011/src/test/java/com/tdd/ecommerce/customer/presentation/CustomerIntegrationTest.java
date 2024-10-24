@@ -5,7 +5,7 @@ import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.customer.application.CustomerService;
 import com.tdd.ecommerce.customer.application.CustomerServiceResponse;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
-import com.tdd.ecommerce.customer.infrastructure.Customer;
+import com.tdd.ecommerce.customer.domain.Customer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

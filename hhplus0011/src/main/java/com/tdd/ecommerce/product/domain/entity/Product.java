@@ -1,6 +1,6 @@
-package com.tdd.ecommerce.product.infrastructure;
+package com.tdd.ecommerce.product.domain.entity;
 
-import com.tdd.ecommerce.cart.infrastructure.Cart;
+import com.tdd.ecommerce.cart.domain.Cart;
 import com.tdd.ecommerce.common.domain.TimeStamped;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

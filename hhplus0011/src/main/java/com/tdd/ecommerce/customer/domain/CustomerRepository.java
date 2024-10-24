@@ -1,8 +1,9 @@
 package com.tdd.ecommerce.customer.domain;
 
-import com.tdd.ecommerce.customer.infrastructure.Customer;
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
 
-public interface CustomerRepository extends JpaRepository<Customer, Long> {
+public interface CustomerRepository{
 
+    Optional<Customer> findById(Long customerId);
+    Customer save(Customer customer);
 }

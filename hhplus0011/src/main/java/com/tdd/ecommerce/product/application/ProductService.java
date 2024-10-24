@@ -4,8 +4,8 @@ import com.tdd.ecommerce.common.exception.BusinessException;
 import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
-import com.tdd.ecommerce.product.infrastructure.Product;
-import com.tdd.ecommerce.product.infrastructure.ProductInventory;
+import com.tdd.ecommerce.product.domain.entity.Product;
+import com.tdd.ecommerce.product.domain.entity.ProductInventory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

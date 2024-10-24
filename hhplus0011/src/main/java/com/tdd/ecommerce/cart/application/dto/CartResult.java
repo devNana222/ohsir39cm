@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class CartResponse{
+public class CartResult {
         private Long customerId;
         private List<CartDetailResponse> productInfoDtoList;
         private LocalDateTime regDate;

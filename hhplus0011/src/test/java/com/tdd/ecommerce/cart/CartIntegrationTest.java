@@ -1,16 +1,16 @@
 package com.tdd.ecommerce.cart;
 
 import com.tdd.ecommerce.cart.application.CartService;
-import com.tdd.ecommerce.cart.application.dto.CartRequest;
-import com.tdd.ecommerce.cart.application.dto.CartResponse;
+import com.tdd.ecommerce.cart.application.dto.CartInfo;
+import com.tdd.ecommerce.cart.application.dto.CartResult;
 import com.tdd.ecommerce.cart.domain.CartRepository;
-import com.tdd.ecommerce.cart.infrastructure.Cart;
+import com.tdd.ecommerce.cart.domain.Cart;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
-import com.tdd.ecommerce.customer.infrastructure.Customer;
+import com.tdd.ecommerce.customer.domain.Customer;
 import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
-import com.tdd.ecommerce.product.infrastructure.Product;
-import com.tdd.ecommerce.product.infrastructure.ProductInventory;
+import com.tdd.ecommerce.product.domain.entity.Product;
+import com.tdd.ecommerce.product.domain.entity.ProductInventory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -66,7 +66,7 @@ public class CartIntegrationTest {
         setProductInCart(customerId, 1L, 10L);
         setProductInCart(customerId, 2L, 20L);
 
-        List<CartResponse> result = sut.getCartProducts(customerId);
+        List<CartResult> result = sut.getCartProducts(customerId);
 
         assertThat(result.get(0).getProductInfoDtoList().get(0).getProductAmount()).isEqualTo(10L);
         assertThat(result.get(0).getProductInfoDtoList().size()).isEqualTo(2);
@@ -77,7 +77,7 @@ public class CartIntegrationTest {
     void getCustomerCart_NO_PRODUCT() {
         Long customerId = createNewCustomerAndGetId();
 
-        List<CartResponse> result = sut.getCartProducts(customerId);
+        List<CartResult> result = sut.getCartProducts(customerId);
 
         assertThat(result.get(0).getProductInfoDtoList()).isEmpty();
     }
@@ -87,10 +87,10 @@ public class CartIntegrationTest {
     void addCartNewProduct_SUCCESS() {
         Long customerId = 1L;
         Long productId = insertNewProductAndReturnProductId();
-        CartRequest cartRequest = new CartRequest(productId, 1L);
-        List<CartRequest> cartRequests = Collections.singletonList(cartRequest);
+        CartInfo cartInfo = new CartInfo(productId, 1L);
+        List<CartInfo> cartInfos = Collections.singletonList(cartInfo);
 
-        List<CartResponse> result = Stream.of(sut.addCartProducts(customerId, cartRequests)).toList();
+        List<CartResult> result = Stream.of(sut.addCartProducts(customerId, cartInfos)).toList();
 
         assertThat(result.get(0).getProductInfoDtoList()).hasSize(1);
         assertThat(result.get(0).getProductInfoDtoList().get(0).getProductAmount()).isEqualTo(1L);
@@ -105,17 +105,17 @@ public class CartIntegrationTest {
         Long pi = insertNewProductAndReturnProductId();
         setProductInCart(customerId, pi, 1L);
 
-        CartRequest cartRequest = new CartRequest(pi, 1L);
-        List<CartRequest> cartRequests = Collections.singletonList(cartRequest);
+        CartInfo cartInfo = new CartInfo(pi, 1L);
+        List<CartInfo> cartInfos = Collections.singletonList(cartInfo);
 
-        Long productId = cartRequests.getFirst().productId();
-        Long amount = cartRequests.getFirst().amount();
+        Long productId = cartInfos.getFirst().productId();
+        Long amount = cartInfos.getFirst().amount();
 
-        CartRequest cartRequest2 = new CartRequest(productId, 2L);
+        CartInfo cartInfo2 = new CartInfo(productId, 2L);
 
-        List<CartRequest> cartRequests2 = Collections.singletonList(cartRequest2);
+        List<CartInfo> cartRequests2 = Collections.singletonList(cartInfo2);
 
-        List<CartResponse> result = Stream.of(sut.addCartProducts(customerId, cartRequests2)).toList();
+        List<CartResult> result = Stream.of(sut.addCartProducts(customerId, cartRequests2)).toList();
 
         assertThat(result.get(0).getProductInfoDtoList().get(0).getProductAmount()).isEqualTo(amount+2L);
 

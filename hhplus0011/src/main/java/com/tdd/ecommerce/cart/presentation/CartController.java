@@ -1,6 +1,6 @@
 package com.tdd.ecommerce.cart.presentation;
 
-import com.tdd.ecommerce.cart.application.dto.CartResponse;
+import com.tdd.ecommerce.cart.application.dto.CartResult;
 import com.tdd.ecommerce.cart.application.CartService;
 import com.tdd.ecommerce.cart.presentation.dto.CartRequest;
 import com.tdd.ecommerce.common.exception.ECommerceExceptions;
@@ -30,13 +30,13 @@ public class CartController {
 
     @GetMapping("/{customerId}")
     public ResponseEntity<?> getCart(@PathVariable("customerId") long customerId) {
-        List<CartResponse> cartProducts = cartService.getCartProducts(customerId);
+        List<CartResult> cartProducts = cartService.getCartProducts(customerId);
         return ResponseUtil.buildSuccessResponse("현재 장바구니 정보입니다.", cartProducts);
     }
 
     @PatchMapping()
     public ResponseEntity<?> addCart(@RequestBody CartRequest request) {
-        CartResponse cartProducts = cartService.addCartProducts(request.customerId(), request.products());
+        CartResult cartProducts = cartService.addCartProducts(request.customerId(), request.products());
 
         return ResponseUtil.buildSuccessResponse("장바구니에 정상적으로 담겼습니다.", cartProducts);
     }
@@ -46,7 +46,7 @@ public class CartController {
         boolean result = cartService.removeCart(customerId);
 
         if(result){
-            return ResponseUtil.buildSuccessResponse("장바구니에 정상적으로 담겼습니다.", null);
+            return ResponseUtil.buildSuccessResponse("장바구니가 정상적으로 삭제되었습니다.", "");
         }
         else{
             return ResponseUtil.buildErrorResponse(ECommerceExceptions.FAILED_DELETE, ECommerceExceptions.FAILED_DELETE.getMessage());

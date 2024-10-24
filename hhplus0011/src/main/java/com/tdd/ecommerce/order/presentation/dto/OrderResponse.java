@@ -1,6 +1,6 @@
 package com.tdd.ecommerce.order.presentation.dto;
 
-import com.tdd.ecommerce.order.infrastructure.OrderProduct;
+import com.tdd.ecommerce.order.domain.OrderProduct;
 
 import java.time.LocalDateTime;
 import java.util.List;
