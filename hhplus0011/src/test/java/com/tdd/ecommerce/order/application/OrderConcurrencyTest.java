@@ -1,14 +1,13 @@
 package com.tdd.ecommerce.order.application;
 
 import com.tdd.ecommerce.common.exception.BusinessException;
-import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.customer.domain.Customer;
-import com.tdd.ecommerce.order.domain.OrderRepository;
+import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.order.domain.Order;
 import com.tdd.ecommerce.order.domain.OrderProduct;
+import com.tdd.ecommerce.order.domain.OrderRepository;
 import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
-
 import com.tdd.ecommerce.product.domain.entity.Product;
 import com.tdd.ecommerce.product.domain.entity.ProductInventory;
 import org.junit.jupiter.api.DisplayName;
