@@ -1,6 +1,6 @@
 package com.tdd.ecommerce.cart;
 
-import com.tdd.ecommerce.cart.domain.CartService;
+import com.tdd.ecommerce.cart.application.CartService;
 import com.tdd.ecommerce.cart.application.dto.CartInfo;
 import com.tdd.ecommerce.cart.application.dto.CartResult;
 import com.tdd.ecommerce.cart.domain.CartRepository;
