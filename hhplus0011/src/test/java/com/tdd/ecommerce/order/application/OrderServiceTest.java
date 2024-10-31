@@ -130,7 +130,7 @@ class OrderServiceTest {
 
         List<OrderProduct> orderProducts = List.of(new OrderProduct(null, 1L, 1L, 2L, 30000L));
 
-        Customer customer = new Customer(customerId, 5000000L);
+        Customer customer = new Customer(customerId, 5000000L, 0L);
         ProductInventory inventory = new ProductInventory(1L, 1L, 10L);
 
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
@@ -172,7 +172,7 @@ class OrderServiceTest {
         Long customerId = 1L;
         List<OrderProduct> orderProducts = List.of(new OrderProduct(null, 1L, 1L, 2L, 10000L));
 
-        Customer customer = new Customer(null, 10000L);  // 잔액 부족
+        Customer customer = new Customer(null, 10000L, 0L);  // 잔액 부족
         Product product = new Product(1L, "Test Product", 10000L, "etc", null);
         ProductInventory inventory = new ProductInventory(1L, 10L,5L);
 

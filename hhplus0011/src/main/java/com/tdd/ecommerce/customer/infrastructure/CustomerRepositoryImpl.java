@@ -23,4 +23,9 @@ public class CustomerRepositoryImpl  implements CustomerRepository {
     public Customer save(Customer customer) {
         return customerJpaRepository.save(customer);
     }
+
+    @Override
+    public Optional<Customer> findByIdWithOptimisticLock(Long customerId) {
+        return customerJpaRepository.findByIdWithOptimisticLock(customerId);
+    }
 }

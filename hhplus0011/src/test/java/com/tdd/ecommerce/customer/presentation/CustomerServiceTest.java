@@ -30,7 +30,7 @@ class CustomerServiceTest {
     @DisplayName("🟢유효한 고객의 잔액을 조회하면 10000이 반환된다.")
     void getBalance_SUCCESS() {
         //given
-        Customer customer = new Customer(1L, 10000L);
+        Customer customer = new Customer(1L, 10000L,0L);
 
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
 
@@ -57,7 +57,7 @@ class CustomerServiceTest {
     @Test
     @DisplayName("🟢유효한 고객의 잔액을 충전하면 충전금액 10000이 반환된다.")
     void chargeBalance_SUCCESS() {
-        Customer customer = new Customer( 1L, 10000L);
+        Customer customer = new Customer( 1L, 10000L, 0L);
         Long chargeAmount = 500L;
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
 
@@ -70,7 +70,7 @@ class CustomerServiceTest {
     @Test
     @DisplayName("🔴 유효하지 않은 고객의 충전을 시도했을 시 BusinessException이 발생한다.")
     void chargeBalance_INVALIDCUSTOMER() {
-        Customer customer = new Customer(1L, 10000L);
+        Customer customer = new Customer(1L, 10000L, 0L);
         Long chargeAmount = 500L;
 
         when(customerRepository.findById(1L)).thenReturn(Optional.empty());

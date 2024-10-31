@@ -51,7 +51,7 @@ public class OrderIntegrationTest {
     @BeforeEach
     public void setUp() {
 
-        Customer customer = new Customer(null, 100000L);
+        Customer customer = new Customer(null, 100000L, 0L);
         customerId = customerRepository.save(customer).getCustomerId();
 
         Product product = new Product(null, "Test Product", 10000L,"etc", null);

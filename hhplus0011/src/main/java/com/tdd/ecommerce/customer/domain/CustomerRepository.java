@@ -6,4 +6,5 @@ public interface CustomerRepository{
 
     Optional<Customer> findById(Long customerId);
     Customer save(Customer customer);
+    Optional<Customer> findByIdWithOptimisticLock(Long customerId);
 }
