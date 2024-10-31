@@ -36,6 +36,9 @@ public class Cart extends TimeStamped {
     }
 
     public void changeAmount(Long amount){
+        if(amount < 0L && this.amount < -amount)
+            throw new IllegalArgumentException("수량을 올바르게 입력하세요.");
+
         if(this.amount - amount < 0L)
             this.amount = 0L;
         else

@@ -1,4 +1,4 @@
-package com.tdd.ecommerce.common.exception;
+package com.tdd.ecommerce.common.presentation;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
