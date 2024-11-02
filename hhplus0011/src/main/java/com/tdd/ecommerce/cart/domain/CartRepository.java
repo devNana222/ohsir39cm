@@ -13,4 +13,8 @@ public interface CartRepository {
     void deleteByCustomerId(Long customerId);
 
     void deleteCartByCustomerIdAndProductId(Long customerId, Long productId);
+
+    void getLock(String key);
+
+    void releaseLock(String key);
 }

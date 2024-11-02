@@ -34,4 +34,14 @@ public class CartRepositoryImpl implements CartRepository {
     public void deleteCartByCustomerIdAndProductId(Long customerId, Long productId){
         cartJpaRepository.deleteCartByCustomerIdAndProductId(customerId, productId);
     }
+
+    @Override
+    public void getLock(String key){
+        cartJpaRepository.getLock(key);
+    }
+
+    @Override
+    public void releaseLock(String key){
+        cartJpaRepository.releaseLock(key);
+    }
 }

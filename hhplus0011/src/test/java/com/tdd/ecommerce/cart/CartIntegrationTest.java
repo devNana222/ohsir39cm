@@ -149,7 +149,7 @@ public class CartIntegrationTest {
     }
 
     private Long createNewCustomerAndGetId(){
-        Customer customer = new Customer(null, 10000L);
+        Customer customer = new Customer(null, 10000L, 0L);
 
         return customerRepository.save(customer).getCustomerId();
     }
