@@ -4,8 +4,11 @@ import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.customer.domain.Customer;
 import com.tdd.ecommerce.common.exception.BusinessException;
+import jakarta.persistence.OptimisticLockException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -34,6 +37,24 @@ public class CustomerService {
 
         customerRepository.save(customer.get());
 
+        return new CustomerServiceResponse(customerId, newBalance);
+    }
+
+    @Transactional//connection 개수가 최대 10개
+    public CustomerServiceResponse chargeCustomerBalanceWithOptimisticLocking(Long customerId, Long chargeAmount) {
+        Long newBalance = 0L;
+
+        try{
+            Optional<Customer> customer = Optional.ofNullable(customerRepository.findByIdWithOptimisticLock(customerId)
+                    .orElseThrow(() -> new BusinessException(ECommerceExceptions.INVALID_CUSTOMER)));
+            newBalance = customer.get().chargeBalance(chargeAmount);
+
+            customerRepository.save(customer.get());
+
+        } catch(ObjectOptimisticLockingFailureException | OptimisticLockException e){
+            log.info("Version 충돌");
+            throw e;
+        }
         return new CustomerServiceResponse(customerId, newBalance);
     }
 }

@@ -11,6 +11,8 @@ import com.tdd.ecommerce.product.domain.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -46,29 +48,38 @@ public class CartService {
         return cartResponse;
     }
 
+    //Named Lock을 사용하는 경우 부모와 별도의 트랜잭션에서 수행되어야 하므로 Propagation 수준을 REQUIRES_NEW로 지정.
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public CartResult addCartProducts(Long customerId, List<CartInfo> cartInfos) {
-
-        List<Cart> carts = getCartList(customerId);
-
         List<CartDetailResponse> responseProduct = new ArrayList<>();
 
-        for (CartInfo cr : cartInfos) {
-            Optional<Cart> exists = carts.stream()
-                    .filter(c -> c.getProduct().getProductId().equals(cr.productId()))
-                    .findFirst();
+        try{
+            cartRepository.getLock(cartInfos.getFirst().productId().toString());
 
-            if (exists.isPresent()) {
+            List<Cart> carts = getCartList(customerId);
+            log.info("최신 카트 : " + carts.getFirst().getProduct());
 
-                Cart existingCart = exists.get();
-                existingCart.addCartAmount(cr.amount());
-                log.info(existingCart.toString());
-                cartRepository.save(existingCart);
-                responseProduct.add(setProductDetail(cr.productId(), existingCart.getAmount()));
-            } else {
-                // 카트에 물품이 존재하지 않을 경우 새롭게 추가
-                addProductsToCart(customerId, cr.productId(), cr.amount());
-                responseProduct.add(setProductDetail(cr.productId(), cr.amount()));
+            for (CartInfo cr : cartInfos) {
+                Optional<Cart> exists = carts.stream()
+                        .filter(c -> c.getProduct().getProductId().equals(cr.productId()))
+                        .findFirst();
+
+                log.info("exists ? : " + exists.toString());
+                if (exists.isPresent()) {
+
+                    Cart existingCart = exists.get();
+                    existingCart.addCartAmount(cr.amount());
+                    log.info(existingCart.toString());
+                    cartRepository.save(existingCart);
+                    responseProduct.add(setProductDetail(cr.productId(), existingCart.getAmount()));
+                } else {
+                    // 카트에 물품이 존재하지 않을 경우 새롭게 추가
+                    addProductsToCart(customerId, cr.productId(), cr.amount());
+                    responseProduct.add(setProductDetail(cr.productId(), cr.amount()));
+                }
             }
+        }finally {
+            cartRepository.releaseLock(cartInfos.getFirst().productId().toString());
         }
 
         return new CartResult(

@@ -58,4 +58,17 @@ public class CustomerController {
           return ResponseUtil.buildErrorResponse(ECommerceExceptions.INVALID_CUSTOMER, ECommerceExceptions.INVALID_CUSTOMER.getMessage());
       }
   }
+
+    @PatchMapping("/{customer_id}/balance/charge2")
+    public ResponseEntity<?> chargeBalanceWithOptimisticLock(@PathVariable("customer_id") Long customerId, @RequestBody CustomerRequest request) {
+        try {
+            request.validate();
+
+            CustomerServiceResponse customerServiceResponse = customerService.chargeCustomerBalanceWithOptimisticLocking(customerId, request.balance());
+            return ResponseUtil.buildSuccessResponse(request.balance() + " point 충전이 완료되었습니다..", customerServiceResponse);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseUtil.buildErrorResponse(CommonExceptions.INVALID_PARAMETER, CommonExceptions.INVALID_PARAMETER.getMessage());
+        }
+    }
 }

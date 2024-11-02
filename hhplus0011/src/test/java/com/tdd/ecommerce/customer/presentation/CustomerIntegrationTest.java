@@ -30,7 +30,7 @@ public class CustomerIntegrationTest {
     @DisplayName("🟢고객 한명의 포인트를 조회하면 1000이 반환된다.")
     void getCustomerBalance_SUCCESS() {
         //given
-        Long customerId = customerRepository.save(new Customer(null, 1000L)).getCustomerId();
+        Long customerId = customerRepository.save(new Customer(null, 1000L, 0L)).getCustomerId();
         //when
         CustomerServiceResponse result = sut.getCustomerBalance(customerId);
 
@@ -59,7 +59,7 @@ public class CustomerIntegrationTest {
     @DisplayName("🟢고객 포인트 충전을 성공하면 합산된 포인트 11000이 반환된다. ")
     void chargeBalance_SUCCESS(){
         //given
-        Long customerId = customerRepository.save(new Customer(null, 1000L)).getCustomerId();
+        Long customerId = customerRepository.save(new Customer(null, 1000L, 0L)).getCustomerId();
         Long chargeAmount = 10000L;
 
         CustomerServiceResponse result = sut.chargeCustomerBalance(customerId, chargeAmount);

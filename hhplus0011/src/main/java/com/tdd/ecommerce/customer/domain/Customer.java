@@ -25,6 +25,10 @@ public class Customer extends TimeStamped {
     @Column(name="balance")
     private Long balance;
 
+    @Version
+    @Column(name="version")
+    private Long version;
+
     public Long chargeBalance(Long amount) {
         if(amount < 0)
             throw new BusinessException(ECommerceExceptions.INVALID_AMOUNT);
