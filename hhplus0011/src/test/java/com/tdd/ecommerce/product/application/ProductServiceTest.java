@@ -1,6 +1,7 @@
 package com.tdd.ecommerce.product.application;
 
 import com.tdd.ecommerce.common.exception.BusinessException;
+import com.tdd.ecommerce.product.domain.ProductInfoDto;
 import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.domain.entity.Product;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cache.annotation.EnableCaching;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@EnableCaching
 class ProductServiceTest {
 
     @Mock
@@ -33,7 +36,7 @@ class ProductServiceTest {
 
 
     @Test
-    @DisplayName("🟢상품 코드로 상품 조회하면 상품은 하나가 나오고 상품의 재고는 20개가 반환된다.")
+    @DisplayName("🟢상품 코드로 상품 조회하면 상품Id, 상품명, 가격, 카테고리를 불러온다.")
     void getProductByProductId() {
         //given
         Product product = new Product(1L, "있는 상품", 100000L, "etc", null);
@@ -43,12 +46,13 @@ class ProductServiceTest {
         when(productRepository.findByProductId(1L)).thenReturn(product);
         when(productInventoryRepository.findById(1L)).thenReturn(Optional.of(inventory));
 
-        List<ProductServiceResponse> response = productService.getProductByProductId(1L);
+        ProductInfoDto response = productService.getProductById(1L);
 
         //then
         assertNotNull(response);
-        assertEquals(1, response.size());
-        assertEquals(20L, response.getFirst().getAmount());
+        assertEquals(1L, response.getProductId());
+        assertEquals("있는 상품", response.getProductName());
+        assertEquals(100000L, response.getPrice());
     }
 
     @Test
@@ -59,7 +63,7 @@ class ProductServiceTest {
 
         //then
         BusinessException exception = assertThrows(BusinessException.class, () -> {
-            productService.getProductByProductId(1L);
+            productService.getProductById(1L);
         });
 
         assertEquals(INVALID_PRODUCT.getMessage(), exception.getMessage());
@@ -79,7 +83,7 @@ class ProductServiceTest {
 
         //then
         BusinessException exception = assertThrows(BusinessException.class, () -> {
-            productService.getProductByProductId(1L);
+            productService.getProductById(1L);
         });
 
         assertEquals(OUT_OF_STOCK.getMessage(), exception.getMessage());
