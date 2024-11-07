@@ -25,3 +25,11 @@
 3. <a href='https://velog.io/@dev_nana/JavaSpring-%EB%8F%99%EC%8B%9C%EC%84%B1-%EC%9D%B4%EC%8A%88Concurrency-Issues%EC%9D%98-%EC%A0%9C%EC%96%B4%EC%A0%9C%EC%96%B4-%EB%AA%A9%EC%A0%81-%EC%A0%9C%EC%96%B4-%EA%B8%B0%EB%B2%95-%EC%A0%9C%EC%96%B4-%EB%B0%A9%EC%8B%9D'>동시성 이슈(Concurrency Issues)의 제어(제어 목적, 제어 기법, 제어 방식)</a>에 대해 정리한 글도 첨부하겠습니다. 
 4. <a href='https://velog.io/@dev_nana/JavaSpring-%EB%8F%99%EC%8B%9C%EC%84%B1-%EC%A0%9C%EC%96%B4-SynchronizedVolatileAtomic'>자바에서 사용할 수 있는 동시성 제어</a>
 </details>
+
+# ⏰ Cache Report 
+<details>
+<summary>접기/펼치기</summary>
+
+   ## 해당 프로젝트에서 적용할 수 있는 "캐시"에 대해 조사한 내용입니다.<br/> 
+1. <a href='https://velog.io/@dev_nana/Redis-%EC%BA%90%EC%8B%9CCache-%EC%A0%84%EB%9E%B5-%EC%84%B8%EC%9A%B0%EA%B8%B0'>캐시 전략</a><br/>
+2. <a href='https://velog.io/@dev_nana/Redis%EA%B0%84%EB%8B%A8%ED%95%9C-E-Commerce-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EB%A5%BC-%ED%86%B5%ED%95%B4-%EC%95%8C%EC%95%84%EB%B3%B4%EB%8A%94-%EB%8F%99%EC%8B%9C%EC%84%B1-%EC%A0%9C%EC%96%B4-3-Redis-Cache%EB%A1%9C-DB%EB%B6%80%ED%95%98-%EC%A4%84%EC%9D%B4%EA%B8%B0-Redis%EB%A1%9C-%EC%96%BC%EB%A7%88%EB%82%98-%EC%A4%84%EC%96%B4%EB%93%9C%EB%8A%94%EC%A7%80-%EC%84%B1%EB%8A%A5%EB%B9%84%EA%B5%90%ED%95%98%EA%B8%B0'>Redis로 Cache만들고 성능 비교하기</a>
