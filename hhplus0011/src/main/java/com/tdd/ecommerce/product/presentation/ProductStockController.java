@@ -4,6 +4,8 @@ import com.tdd.ecommerce.common.exception.BusinessException;
 import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.common.model.CommonApiResponse;
 import com.tdd.ecommerce.common.model.ResponseUtil;
+import com.tdd.ecommerce.product.application.ProductFacade;
+import com.tdd.ecommerce.product.application.ProductInfo;
 import com.tdd.ecommerce.product.application.ProductService;
 import com.tdd.ecommerce.product.application.ProductServiceResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,17 +30,17 @@ import java.util.List;
 @Slf4j
 public class ProductStockController {
 
-    private final ProductService productService;
+    private final ProductFacade productFacade;
 
     @Autowired
-    public ProductStockController(ProductService productService) {
-        this.productService = productService;
+    public ProductStockController(ProductFacade productFacade) {
+        this.productFacade = productFacade;
     }
 
     @GetMapping("/{productId}")
     public ResponseEntity<?> getProductInfo(@PathVariable Long productId) {
         try{
-            List<ProductServiceResponse> products = productService.getProductByProductId(productId);
+            ProductInfo products = productFacade.getProductByProductId(productId);
             log.info("상품 코드 : {}, 상품 정보 : {}", productId, products);
 
             return ResponseUtil.buildSuccessResponse("상품코드 : "+ productId + "의 상품 정보입니다.", products);
@@ -51,7 +53,7 @@ public class ProductStockController {
     @GetMapping()
     public ResponseEntity<?> getProductsInStock() {
         try{
-            List<ProductServiceResponse> products = productService.getProducts();
+            List<ProductInfo> products = productFacade.getProducts();
 
             return ResponseUtil.buildSuccessResponse("현재 재고가 있는 상품들입니다.", products);
         }

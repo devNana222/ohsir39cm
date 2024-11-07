@@ -5,6 +5,8 @@ import com.tdd.ecommerce.event.domain.Ranking;
 import com.tdd.ecommerce.event.domain.RankingRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.domain.entity.Product;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,10 @@ public class RankingService {
         this.productRepository = productRepository;
     }
 
+   @Cacheable( cacheNames = "getDaysRanking"
+               , key = "#dateFormat"
+               , unless = "#dateFormat == null")
+   @CacheEvict(value = "dateFormat", key ="#dateFormat.minusDays(3)")
     public List<RankingResponse> getThreeDaysRanking(LocalDateTime dateFormat){
         LocalDateTime threeDaysAgo = dateFormat.minusDays(2);
         Pageable pageable = PageRequest.of(0, 5);
@@ -48,5 +54,5 @@ public class RankingService {
                 }).collect(Collectors.toList());
 
     }
-
+//key 가져오는 문법으로 테스트 > value가 있는지 없는지?
 }

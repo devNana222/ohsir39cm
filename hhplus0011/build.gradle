@@ -47,6 +47,7 @@ dependencies {
     //redis
     implementation 'org.redisson:redisson-spring-boot-starter:3.16.3'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
     //docker
     testImplementation "org.testcontainers:testcontainers:1.20.3"
     testImplementation "org.testcontainers:junit-jupiter:1.20.3"
