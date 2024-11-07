@@ -1,6 +1,7 @@
 package com.tdd.ecommerce.event.application;
 
 import com.tdd.ecommerce.event.application.dto.RankingResponse;
+import com.tdd.ecommerce.event.domain.RankingRepository;
 import com.tdd.ecommerce.order.domain.OrderProductRepository;
 import com.tdd.ecommerce.order.domain.OrderRepository;
 import com.tdd.ecommerce.order.domain.Order;
@@ -13,12 +14,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -33,6 +39,13 @@ public class RankingIntegrationTest {
     OrderProductRepository orderProductRepository;
     @Autowired
     ProductRepository productRepository;
+
+    @SpyBean
+    RankingRepository spyRankingRepository;
+
+    @Autowired
+    private RankingService rankingService;
+
 
     @BeforeEach
     void setUp() {
@@ -73,5 +86,25 @@ public class RankingIntegrationTest {
 
         //then
         assertThat(result.get(0).salesCount() > result.get(1).salesCount());
+    }
+
+    @Test
+    @DisplayName("🟢Cache 잘 적용되었는지 확인하기.")
+    void validateRankingCache(){
+        LocalDateTime date = LocalDateTime.now();
+
+        //캐시 적용 전
+        rankingService.getThreeDaysRanking(date);
+
+        verify(spyRankingRepository, times(1)).findByNowdateForRanking(any(),any(Pageable.class));
+
+        //캐시 적용 후
+        rankingService.getThreeDaysRanking(date);
+
+        verify(spyRankingRepository, times(1)).findByNowdateForRanking(any(),any(Pageable.class));
+
+        rankingService.getThreeDaysRanking(date.minusDays(1)); //다른날짜로 했을 때 조회되는지 확인
+        verify(spyRankingRepository, times(2)).findByNowdateForRanking(any(),any(Pageable.class));
+
     }
 }
