@@ -33,22 +33,19 @@ class ProductServiceTest {
 
 
     @Test
-    @DisplayName("🟢상품 코드로 상품 조회하면 상품은 하나가 나오고 상품의 재고는 20개가 반환된다.")
+    @DisplayName("🟢상품 코드로 상품 조회하면 상품의 재고는 20개가 반환된다.")
     void getProductByProductId() {
         //given
-        Product product = new Product(1L, "있는 상품", 100000L, "etc", null);
         ProductInventory inventory = new ProductInventory(1L, 1L, 20L);
 
         //when
-        when(productRepository.findByProductId(1L)).thenReturn(product);
         when(productInventoryRepository.findById(1L)).thenReturn(Optional.of(inventory));
 
-        List<ProductServiceResponse> response = productService.getProductByProductId(1L);
+        Optional<ProductInventory> response = productService.getProductInventoryById(1L);
 
         //then
         assertNotNull(response);
-        assertEquals(1, response.size());
-        assertEquals(20L, response.getFirst().getAmount());
+        assertEquals(20L, response.get().getAmount());
     }
 
     @Test
@@ -59,7 +56,7 @@ class ProductServiceTest {
 
         //then
         BusinessException exception = assertThrows(BusinessException.class, () -> {
-            productService.getProductByProductId(1L);
+            productService.getProductById(1L);
         });
 
         assertEquals(INVALID_PRODUCT.getMessage(), exception.getMessage());
@@ -79,7 +76,7 @@ class ProductServiceTest {
 
         //then
         BusinessException exception = assertThrows(BusinessException.class, () -> {
-            productService.getProductByProductId(1L);
+            productService.getProductInventoryById(1L);
         });
 
         assertEquals(OUT_OF_STOCK.getMessage(), exception.getMessage());
