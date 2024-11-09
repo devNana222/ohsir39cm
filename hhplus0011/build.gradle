@@ -38,12 +38,20 @@ dependencies {
     testImplementation 'com.h2database:h2' //테스트시에 사용하는 내장Database
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
-  //  implementation 'com.google.guava:guava:11.0.2'
+    //implementation 'com.google.guava:guava:11.0.2'
     //swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
     //restdocs
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    //redis
+    implementation 'org.redisson:redisson-spring-boot-starter:3.16.3'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
+    //docker
+    testImplementation "org.testcontainers:testcontainers:1.20.3"
+    testImplementation "org.testcontainers:junit-jupiter:1.20.3"
+    testImplementation "org.testcontainers:mysql:1.20.3"
 }
 
 // 전역 변수 설정 시작
@@ -80,3 +88,6 @@ bootJar {
 }
 // rest docs 추가 끝
 
+tasks.withType(JavaCompile) {
+    options.compilerArgs << '-parameters'
+}

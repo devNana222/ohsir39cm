@@ -1,4 +1,4 @@
-package com.tdd.ecommerce.order.application;
+package com.tdd.ecommerce.order.application.dataPlatform;
 
 import com.tdd.ecommerce.order.domain.OrderProduct;
 import org.springframework.stereotype.Service;

@@ -5,6 +5,7 @@ import com.tdd.ecommerce.cart.domain.CartRepository;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.customer.domain.Customer;
 import com.tdd.ecommerce.common.exception.BusinessException;
+import com.tdd.ecommerce.order.application.dataPlatform.DataPlatformInterface;
 import com.tdd.ecommerce.order.domain.OrderProductRepository;
 import com.tdd.ecommerce.order.domain.OrderRepository;
 import com.tdd.ecommerce.order.domain.Order;
@@ -185,19 +186,4 @@ class OrderServiceTest {
 
     }
 
-//    @Test
-//    @DisplayName("🟢장바구니에 있는 물품을 주문하면 장바구니에서 개수가 감소한다.")
-//    void orderFromCart_SUCCESS() {
-//        // given
-//        Long customerId = 1L;
-//        List<OrderProduct> orderProducts = List.of(new OrderProduct(null, 1L, 1L, 2L, 10000L));
-//        when(cartRepository.findAllByCustomerId(customerId)).thenReturn(existingCarts);
-//
-//        // when
-//        sut.createOrderFromCart(customerId, orderProducts);
-//
-//        // then
-//        assertEquals(1L, existingCarts.getFirst().getAmount());
-//        assertEquals()
-//    }
 }
