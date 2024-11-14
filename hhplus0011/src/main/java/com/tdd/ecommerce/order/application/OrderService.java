@@ -7,11 +7,12 @@ import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.customer.domain.Customer;
 import com.tdd.ecommerce.common.exception.BusinessException;
-import com.tdd.ecommerce.order.application.dataPlatform.DataPlatformInterface;
+import com.tdd.ecommerce.order.application.dataPlatform.OrderPaidEventListenerInterface;
 import com.tdd.ecommerce.order.domain.Order;
 import com.tdd.ecommerce.order.domain.OrderProduct;
 import com.tdd.ecommerce.order.domain.OrderProductRepository;
 import com.tdd.ecommerce.order.domain.OrderRepository;
+import com.tdd.ecommerce.order.presentation.dto.OrderProductRequest;
 import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.domain.entity.Product;
@@ -19,6 +20,7 @@ import com.tdd.ecommerce.product.domain.entity.ProductInventory;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,9 +37,9 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final ProductInventoryRepository productInventoryRepository;
     private final OrderRepository orderRepository;
-    private final DataPlatformInterface dataPlatformInterface;
     private final OrderProductRepository orderProductRepository;
     private final CartRepository cartRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public List<OrderServiceResponse> getOrderList(Long orderId){
         Optional<Order> order = orderRepository.findById(orderId);
@@ -47,6 +49,16 @@ public class OrderService {
         }
 
         List<OrderProduct> orderProducts = orderProductRepository.findByOrderId(orderId);
+        List<OrderInfo> orderInfoList = new ArrayList<>();
+
+        for (OrderProduct orderProduct : orderProducts) {
+            // OrderProductRequest 객체 생성 및 데이터 설정
+            OrderInfo orderInfo = new OrderInfo();
+            orderInfo.setProductId(orderProduct.getProductId());
+            orderInfo.setAmount(orderProduct.getAmount());
+
+            orderInfoList.add(orderInfo);
+        }
 
         if(orderProducts.isEmpty()){
             log.warn("Order Product is Empty");
@@ -59,41 +71,56 @@ public class OrderService {
             totalPrice += orderProduct.getPrice() * orderProduct.getAmount();
         }
 
-        return createOrderResponse(orderId, order.get().getCustomerId(), totalPrice, orderProducts);
+        return createOrderResponse(orderId, order.get().getCustomerId(), totalPrice, orderInfoList);
     }
 
     @Transactional
-    public List<OrderServiceResponse> createOrder(Long customerId, List<OrderProduct> orders) {
-        Long totalRequiredBalance = getRequiredBalance(orders);
+    public List<OrderServiceResponse> createOrder(Long customerId, List<OrderProductRequest> orders) {
+        Customer customer;
+        Order newOrder;
 
-        Customer customer = getBalance(customerId);
+        List<OrderInfo> orderInfoList = new ArrayList<>();
+        try {
+            Long totalRequiredBalance = getRequiredBalance(orders);
 
-        if(!isEnoughBalance(customerId, totalRequiredBalance)) {
-            throw new BusinessException(ECommerceExceptions.INSUFFICIENCY_BALANCE);
+            customer = getBalance(customerId);
+
+            if (!isEnoughBalance(customerId, totalRequiredBalance)) {
+                throw new BusinessException(ECommerceExceptions.INSUFFICIENCY_BALANCE);
+            }
+
+            newOrder = saveOrder(customerId);
+
+            customer.useBalance(totalRequiredBalance);
+
+            customerRepository.save(customer);
+            saveOrderProduct(newOrder.getOrderId(), orders);
+            updateProductInventory(orders);
+
+
+            for (OrderProductRequest orderProduct : orders) {
+                // OrderProductRequest 객체 생성 및 데이터 설정
+                OrderInfo orderInfo = new OrderInfo();
+                orderInfo.setProductId(orderProduct.getProductId());
+                orderInfo.setAmount(orderProduct.getAmount());
+
+                orderInfoList.add(orderInfo);
+            }
+
+            eventPublisher.publishEvent(new OrderEvent(this, orders));
         }
-
-        Order newOrder = saveOrder(customerId);
-
-        customer.useBalance(totalRequiredBalance);
-
-        customerRepository.save(customer);
-        saveOrderProduct(newOrder.getOrderId(), orders);
-        updateProductInventory(orders);
-
-        //결제 성공 시 주문 정보 데이터 플랫폼에 전송
-        if(dataPlatformInterface.sendOrderMessage(orders)) {
-
-            return createOrderResponse(newOrder.getOrderId(), customerId, customer.getBalance(), orders);
-        }
-        else
+        catch(Exception e){
+            log.warn("Order creation failed", e);
             return Collections.emptyList();
+        }
+        return createOrderResponse(newOrder.getOrderId(), customerId, customer.getBalance(), orderInfoList);
     }
 
     @Transactional
-    public List<OrderServiceResponse> createOrderFromCart(Long customerId, List<OrderProduct> orders){
+    public List<OrderServiceResponse> createOrderFromCart(Long customerId, List<OrderProductRequest> orders){
         List<OrderServiceResponse> result = createOrder(customerId, orders);
 
-        for(OrderProduct op : orders){
+        for(OrderProductRequest op : orders){
             updateCustomerCart(customerId, op.getProductId(), op.getAmount());
         }
 
@@ -112,10 +139,10 @@ public class OrderService {
         return customerRepository.findById(customerId).get();
     }
 
-    private Long getRequiredBalance(List<OrderProduct> orders){
+    private Long getRequiredBalance(List<OrderProductRequest> orders){
         long totalRequiredBalance = 0L;
 
-        for(OrderProduct order : orders){
+        for(OrderProductRequest order : orders){
             Long productId = order.getProductId();
             Long requiredStock = order.getAmount();
 
@@ -135,8 +162,8 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    private void updateProductInventory(List<OrderProduct> orders) {
-        for (OrderProduct order : orders) {
+    private void updateProductInventory(List<OrderProductRequest> orders) {
+        for (OrderProductRequest order : orders) {
             Long productId = order.getProductId();
             Long requiredStock = order.getAmount();
 
@@ -147,10 +174,10 @@ public class OrderService {
             productInventoryRepository.save(inventory);
         }
     }
-    private void saveOrderProduct(Long orderId, List<OrderProduct> orderProducts) {
+    private void saveOrderProduct(Long orderId, List<OrderProductRequest> orderProducts) {
         List<OrderProduct> orderInfos = new ArrayList<>();
 
-        for (OrderProduct orderProduct : orderProducts) {
+        for (OrderProductRequest orderProduct : orderProducts) {
             Product product = productRepository.findByProductId(orderProduct.getProductId());
 
             Long price = product.getPrice();
@@ -169,7 +196,7 @@ public class OrderService {
         orderProductRepository.saveAll(orderInfos);
     }
 
-    private List<OrderServiceResponse> createOrderResponse(Long orderId, Long customerId, Long points, List<OrderProduct> orders) {
+    private List<OrderServiceResponse> createOrderResponse(Long orderId, Long customerId, Long points, List<OrderInfo> orders) {
         List<OrderServiceResponse.OrderProductInfo> orderProductInfos = orders.stream()
                 .map(order -> {
                     Product product = productRepository.findByProductId(order.getProductId());
