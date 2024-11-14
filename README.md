@@ -34,6 +34,7 @@
    ## 해당 프로젝트에서 적용할 수 있는 "캐시"에 대해 조사한 내용입니다.<br/> 
 1. <a href='https://velog.io/@dev_nana/Redis-%EC%BA%90%EC%8B%9CCache-%EC%A0%84%EB%9E%B5-%EC%84%B8%EC%9A%B0%EA%B8%B0'>캐시 전략</a><br/>
 2. <a href='https://velog.io/@dev_nana/Redis%EA%B0%84%EB%8B%A8%ED%95%9C-E-Commerce-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EB%A5%BC-%ED%86%B5%ED%95%B4-%EC%95%8C%EC%95%84%EB%B3%B4%EB%8A%94-%EB%8F%99%EC%8B%9C%EC%84%B1-%EC%A0%9C%EC%96%B4-3-Redis-Cache%EB%A1%9C-DB%EB%B6%80%ED%95%98-%EC%A4%84%EC%9D%B4%EA%B8%B0-Redis%EB%A1%9C-%EC%96%BC%EB%A7%88%EB%82%98-%EC%A4%84%EC%96%B4%EB%93%9C%EB%8A%94%EC%A7%80-%EC%84%B1%EB%8A%A5%EB%B9%84%EA%B5%90%ED%95%98%EA%B8%B0'>Redis로 Cache만들고 성능 비교하기</a>
+</details>
 
 # 🍀 Index Report 
 <details>
@@ -43,7 +44,7 @@
 1. <a href='[https://velog.io/@dev_nana/Redis-%EC%BA%90%EC%8B%9CCache-%EC%A0%84%EB%9E%B5-%EC%84%B8%EC%9A%B0%EA%B8%B0](https://velog.io/@dev_nana/DataBaseDB-Query-OptimizationIndex)'>DB Query Optimization</a><br/>
 2. <a href='[https://velog.io/@dev_nana/Redis%EA%B0%84%EB%8B%A8%ED%95%9C-E-Commerce-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EB%A5%BC-%ED%86%B5%ED%95%B4-%EC%95%8C%EC%95%84%EB%B3%B4%EB%8A%94-%EB%8F%99%EC%8B%9C%EC%84%B1-%EC%A0%9C%EC%96%B4-3-Redis-Cache%EB%A1%9C-DB%EB%B6%80%ED%95%98-%EC%A4%84%EC%9D%B4%EA%B8%B0-Redis%EB%A1%9C-%EC%96%BC%EB%A7%88%EB%82%98-%EC%A4%84%EC%96%B4%EB%93%9C%EB%8A%94%EC%A7%80-%EC%84%B1%EB%8A%A5%EB%B9%84%EA%B5%90%ED%95%98%EA%B8%B0](https://velog.io/@dev_nana/DataBase%EA%B0%84%EB%8B%A8%ED%95%9C-E-Commerce-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EB%A5%BC-%ED%86%B5%ED%95%B4-%EC%95%8C%EC%95%84%EB%B3%B4%EB%8A%94-Indexing-Index%EB%A1%9C-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0%ED%95%B4%EB%B3%B4%EA%B8%B0)'>첫 삽질..</a> 인덱스와 캐싱을 동시에 적용 해보려 했으나 모수가 너무 적어 적절한 테스트가 이루어 지지 못했습니다.
 3. <a href='https://velog.io/@dev_nana/DataBase%EA%B0%84%EB%8B%A8%ED%95%9C-E-Commerce-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EB%A5%BC-%ED%86%B5%ED%95%B4-%EC%95%8C%EC%95%84%EB%B3%B4%EB%8A%94-Indexing-Index%EB%A1%9C-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0%ED%95%B4%EB%B3%B4%EA%B8%B02'>실행계획을 통해 알아본 성능개선 보고서</a>
-
+</details>
 
 # 🎉 Event Report 
 <details>
@@ -51,3 +52,4 @@
 
    ## 해당 프로젝트에서 적용할 수 있는 "관심사 분리"에 대해 조사한 내용입니다.<br/> 
 1. <a href='https://velog.io/@dev_nana/%EA%B0%84%EB%8B%A8%ED%95%9C-E-Commerce-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EB%A5%BC-%ED%86%B5%ED%95%B4-%EC%95%8C%EC%95%84%EB%B3%B4%EB%8A%94-%ED%8A%B8%EB%9E%9C%EC%9E%AD%EC%85%98-%EB%B2%94%EC%9C%84%EC%97%90-%EB%8C%80%ED%95%9C-%EC%9D%B4%ED%95%B4'>관심사 분리</a>
+</details>
