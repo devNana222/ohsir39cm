@@ -1,6 +1,4 @@
 package com.tdd.ecommerce.order.presentation.dto;
-
-import com.tdd.ecommerce.order.domain.OrderProduct;
 import lombok.Getter;
 
 import java.util.List;
@@ -9,5 +7,5 @@ import java.util.List;
 
 public class OrderRequest {
     private Long customerId;
-    private List<OrderProduct> orderProducts;
+    private List<OrderProductRequest> orderProducts;
 }

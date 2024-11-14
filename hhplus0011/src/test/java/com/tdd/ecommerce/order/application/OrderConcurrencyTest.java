@@ -6,6 +6,7 @@ import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.order.domain.Order;
 import com.tdd.ecommerce.order.domain.OrderProduct;
 import com.tdd.ecommerce.order.domain.OrderRepository;
+import com.tdd.ecommerce.order.presentation.dto.OrderProductRequest;
 import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.domain.entity.Product;
@@ -67,10 +68,10 @@ public class OrderConcurrencyTest {
             Long  uniqueId = (long) i;
             executorService.submit(()->{
                 try{
-                    List<OrderProduct> orderProducts = new ArrayList<>();
+                    List<OrderProductRequest> orderProducts = new ArrayList<>();
                     Long orderId = saveOrder(uniqueId).getOrderId();
 
-                    orderProducts.add(new OrderProduct(null, orderId, productId, 1L, 1000L));
+                    orderProducts.add(new OrderProductRequest(orderId, productId));
 
                     sut.createOrder(uniqueId, orderProducts);
                     successCount.incrementAndGet();

@@ -1,5 +1,6 @@
 package com.tdd.ecommerce.product.infrastructure.jpaRepository;
 
+import com.tdd.ecommerce.product.application.ProductServiceResponse;
 import com.tdd.ecommerce.product.domain.entity.ProductInventory;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,8 +24,10 @@ public interface ProductInventoryJpaRepository extends JpaRepository<ProductInve
             "WHERE pi.productId = :productId")
     ProductInventory findByProductIdWithLock(@Param("productId") Long productId);
 
-    @Modifying
-    @Query("UPDATE ProductInventory pi SET pi.amount = :newAmount WHERE pi.productId = :productId")
-    void updateStock(@Param("productId") Long productId, @Param("newAmount") Long newAmount);
-
+    @Query("SELECT new com.tdd.ecommerce.product.application.ProductServiceResponse(p.productId, p.productName, p.category, p.price, pi.amount) " +
+            "FROM ProductInventory pi " +
+            "INNER JOIN Product p " +
+            "ON pi.productId = p.productId " +
+            "WHERE pi.amount > 0")
+    List<ProductServiceResponse> findProductsWithInventoryGreaterThanZero();
 }

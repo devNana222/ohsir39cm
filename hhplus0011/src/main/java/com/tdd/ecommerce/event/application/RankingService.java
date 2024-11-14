@@ -26,10 +26,10 @@ public class RankingService {
         this.productRepository = productRepository;
     }
 
-    @Cacheable( cacheNames = "getDaysRanking"
-            , key = "#dateFormat.toLocalDate()"
-            , unless = "#dateFormat == null")
-    @CacheEvict(value = "dateFormat", key ="#dateFormat.toLocalDate().minusDays(3)")
+   @Cacheable( cacheNames = "getDaysRanking"
+           , key = "#dateFormat.toLocalDate()"
+           , unless = "#dateFormat == null")
+   @CacheEvict(value = "dateFormat", key ="#dateFormat.toLocalDate().minusDays(3)")
     public List<RankingResponse> getThreeDaysRanking(LocalDateTime dateFormat){
         LocalDateTime threeDaysAgo = dateFormat.minusDays(2);
         Pageable pageable = PageRequest.of(0, 5);

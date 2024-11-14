@@ -31,27 +31,15 @@ public class ProductService {
 
     @Cacheable(cacheNames = "getAllProductInfo"
             , key = "'products'")
-    public List<ProductServiceResponse> getProducts(){
-        List<ProductInventory> productInventories = productInventoryRepository.findProductsByAmountGreaterThanZero();
+    public List<ProductServiceResponse> getProducts() {
+        List<ProductServiceResponse> products = productInventoryRepository.findProductsWithInventoryGreaterThanZero();
 
-        if (productInventories == null) {
+        if (products.isEmpty()) {
             throw new BusinessException(ECommerceExceptions.OUT_OF_STOCK);
         }
 
-        return productInventories.stream()
-                .map(inventory -> {
-                    Product product = productRepository.findByProductId(inventory.getProductId());
-
-                    return new ProductServiceResponse(
-                            product.getProductId(),
-                            product.getProductName(),
-                            product.getCategory(),
-                            product.getPrice(),
-                            inventory.getAmount()
-                    );
-                }).collect(Collectors.toList());
+        return products;
     }
-
    @Cacheable(cacheNames = "getProductInfo"
            , key = "#productId")
     public ProductInfoDto getProductById(Long productId) {

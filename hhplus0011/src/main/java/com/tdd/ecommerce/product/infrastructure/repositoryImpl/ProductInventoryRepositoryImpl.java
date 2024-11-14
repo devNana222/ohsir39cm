@@ -1,5 +1,6 @@
 package com.tdd.ecommerce.product.infrastructure.repositoryImpl;
 
+import com.tdd.ecommerce.product.application.ProductServiceResponse;
 import com.tdd.ecommerce.product.domain.entity.ProductInventory;
 import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.infrastructure.jpaRepository.ProductInventoryJpaRepository;
@@ -28,11 +29,6 @@ public class ProductInventoryRepositoryImpl implements ProductInventoryRepositor
     }
 
     @Override
-    public void updateStock( Long productId, Long newAmount){
-        productInventoryJpaRepository.updateStock(productId, newAmount);
-    }
-
-    @Override
     public ProductInventory save(ProductInventory productInventory){
         return productInventoryJpaRepository.save(productInventory);
     }
@@ -40,6 +36,11 @@ public class ProductInventoryRepositoryImpl implements ProductInventoryRepositor
     @Override
     public Optional<ProductInventory> findById(Long productId){
         return productInventoryJpaRepository.findById(productId);
+    }
+
+    @Override
+    public List<ProductServiceResponse> findProductsWithInventoryGreaterThanZero(){
+        return productInventoryJpaRepository.findProductsWithInventoryGreaterThanZero();
     }
 
 }

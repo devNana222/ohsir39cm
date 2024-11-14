@@ -15,7 +15,7 @@ public class Cart extends TimeStamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="cart_id")
+    @Column(unique = true, nullable = false, name="cart_id")
     private Long cartId;
 
     @Column(name="customer_id")

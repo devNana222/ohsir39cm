@@ -5,11 +5,12 @@ import com.tdd.ecommerce.cart.domain.CartRepository;
 import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.customer.domain.Customer;
 import com.tdd.ecommerce.common.exception.BusinessException;
-import com.tdd.ecommerce.order.application.dataPlatform.DataPlatformInterface;
+import com.tdd.ecommerce.order.application.dataPlatform.OrderPaidEventListenerInterface;
 import com.tdd.ecommerce.order.domain.OrderProductRepository;
 import com.tdd.ecommerce.order.domain.OrderRepository;
 import com.tdd.ecommerce.order.domain.Order;
 import com.tdd.ecommerce.order.domain.OrderProduct;
+import com.tdd.ecommerce.order.presentation.dto.OrderProductRequest;
 import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.domain.entity.Product;
@@ -48,7 +49,7 @@ class OrderServiceTest {
     private CartRepository cartRepository;
 
     @Mock
-    private DataPlatformInterface dataPlatformInterface;
+    private OrderPaidEventListenerInterface orderPaidEventListenerInterface;
 
     @Mock
     private OrderProductRepository orderProductRepository;
@@ -129,7 +130,7 @@ class OrderServiceTest {
         Long orderId = 1L;
         Long customerId = 1L;
 
-        List<OrderProduct> orderProducts = List.of(new OrderProduct(null, 1L, 1L, 2L, 30000L));
+        List<OrderProductRequest> orderProducts = List.of(new OrderProductRequest(1L, 2L));
 
         Customer customer = new Customer(customerId, 5000000L, 0L);
         ProductInventory inventory = new ProductInventory(1L, 1L, 10L);
@@ -138,7 +139,6 @@ class OrderServiceTest {
         when(productRepository.findByProductId(1L)).thenReturn(product1);
         when(productInventoryRepository.findById(1L)).thenReturn(Optional.of(inventory));
         when(orderRepository.save(any(Order.class))).thenReturn(new Order(1L, customerId));
-        when(dataPlatformInterface.sendOrderMessage(anyList())).thenReturn(true);
 
         //when
         List<OrderServiceResponse> response = sut.createOrder(orderId, orderProducts);
@@ -146,15 +146,14 @@ class OrderServiceTest {
         //then
         assertFalse(response.isEmpty());
         verify(orderProductRepository, times(1)).saveAll(anyList());
-        verify(dataPlatformInterface, times(1)).sendOrderMessage(anyList());
     }
 
     @Test
     @DisplayName("🔴재고 부족하면 BusinessException이 발생한다.")
     void createOrder_OUT_OF_STOCK() {
         // given
-        List<OrderProduct> orderProducts = List.of(
-                new OrderProduct(null, 1L, 1L, 2L, 30000L)
+        List<OrderProductRequest> orderProducts = List.of(
+                new OrderProductRequest(1L, 2L)
         );
 
         ProductInventory inventory = new ProductInventory(1L, 1L, 1L);
@@ -171,7 +170,7 @@ class OrderServiceTest {
     void createOrder_INSUFFICIENT_BALANCE() {
         // given
         Long customerId = 1L;
-        List<OrderProduct> orderProducts = List.of(new OrderProduct(null, 1L, 1L, 2L, 10000L));
+        List<OrderProductRequest> orderProducts = List.of(new OrderProductRequest(1L, 1L));
 
         Customer customer = new Customer(null, 10000L, 0L);  // 잔액 부족
         Product product = new Product(1L, "Test Product", 10000L, "etc", null);
@@ -185,5 +184,4 @@ class OrderServiceTest {
         assertThrows(BusinessException.class, () -> sut.createOrder(customerId, orderProducts));
 
     }
-
 }

@@ -1,5 +1,6 @@
 package com.tdd.ecommerce.product.domain;
 
+import com.tdd.ecommerce.product.application.ProductServiceResponse;
 import com.tdd.ecommerce.product.domain.entity.ProductInventory;
 
 import java.util.List;
@@ -11,9 +12,9 @@ public interface ProductInventoryRepository {
 
     ProductInventory findByProductIdWithLock(Long procuctId);
 
-    void updateStock(Long productId, Long newAmount);
-
     ProductInventory save(ProductInventory productInventory);
 
     Optional<ProductInventory> findById(Long productId);
+
+    List<ProductServiceResponse> findProductsWithInventoryGreaterThanZero();
 }
