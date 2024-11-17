@@ -1,13 +1,11 @@
 package com.tdd.ecommerce.order.application;
 
 import com.tdd.ecommerce.cart.domain.CartRepository;
-
 import com.tdd.ecommerce.cart.domain.entity.Cart;
-import com.tdd.ecommerce.common.exception.ECommerceExceptions;
-import com.tdd.ecommerce.customer.domain.CustomerRepository;
-import com.tdd.ecommerce.customer.domain.Customer;
 import com.tdd.ecommerce.common.exception.BusinessException;
-import com.tdd.ecommerce.order.application.dataPlatform.OrderPaidEventListenerInterface;
+import com.tdd.ecommerce.common.exception.ECommerceExceptions;
+import com.tdd.ecommerce.customer.domain.Customer;
+import com.tdd.ecommerce.customer.domain.CustomerRepository;
 import com.tdd.ecommerce.order.domain.Order;
 import com.tdd.ecommerce.order.domain.OrderProduct;
 import com.tdd.ecommerce.order.domain.OrderProductRepository;
@@ -17,14 +15,16 @@ import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.domain.entity.Product;
 import com.tdd.ecommerce.product.domain.entity.ProductInventory;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -85,9 +85,7 @@ public class OrderService {
 
             customer = getBalance(customerId);
 
-            if (!isEnoughBalance(customerId, totalRequiredBalance)) {
-                throw new BusinessException(ECommerceExceptions.INSUFFICIENCY_BALANCE);
-            }
+            customer.checkSufficientBalance(totalRequiredBalance);
 
             newOrder = saveOrder(customerId);
 
@@ -106,12 +104,12 @@ public class OrderService {
 
                 orderInfoList.add(orderInfo);
             }
-
+//outbox table 에 이벤트 저장한 다음에 이벤트 발행해야함.
             eventPublisher.publishEvent(new OrderEvent(this, orders));
         }
         catch(Exception e){
             log.warn("Order creation failed", e);
-            return Collections.emptyList();
+            throw new RuntimeException("Order creation failed", e);
         }
         return createOrderResponse(newOrder.getOrderId(), customerId, customer.getBalance(), orderInfoList);
     }

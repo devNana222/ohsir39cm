@@ -33,11 +33,12 @@ public class CustomerService {
         Optional<Customer> customer = Optional.ofNullable(customerRepository.findById(customerId)
                 .orElseThrow(() -> new BusinessException(ECommerceExceptions.INVALID_CUSTOMER)));
 
-        Long newBalance = customer.get().chargeBalance(chargeAmount);
+        //Long newBalance = customer.get().chargeBalance(chargeAmount);
+        customer.get().chargeBalance(chargeAmount);
 
         customerRepository.save(customer.get());
 
-        return new CustomerServiceResponse(customerId, newBalance);
+        return new CustomerServiceResponse(customerId, customer.get().getBalance());
     }
 
     @Transactional//connection 개수가 최대 10개
@@ -47,9 +48,10 @@ public class CustomerService {
         try{
             Optional<Customer> customer = Optional.ofNullable(customerRepository.findByIdWithOptimisticLock(customerId)
                     .orElseThrow(() -> new BusinessException(ECommerceExceptions.INVALID_CUSTOMER)));
-            newBalance = customer.get().chargeBalance(chargeAmount);
+            customer.get().chargeBalance(chargeAmount);
 
             customerRepository.save(customer.get());
+            newBalance = customer.get().getBalance();
 
         } catch(ObjectOptimisticLockingFailureException | OptimisticLockException e){
             log.info("Version 충돌");

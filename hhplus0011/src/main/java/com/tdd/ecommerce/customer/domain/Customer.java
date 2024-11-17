@@ -37,5 +37,12 @@ public class Customer extends TimeStamped {
 
     public void useBalance(Long amount) {
         this.balance -= amount;
+        //balance.use(amount);
+    }
+
+    public void checkSufficientBalance(Long requiredAmount) {
+        if(balance < requiredAmount) {
+            throw new BusinessException(ECommerceExceptions.INSUFFICIENCY_BALANCE);
+        }
     }
 }
