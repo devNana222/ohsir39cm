@@ -6,6 +6,7 @@ import com.tdd.ecommerce.order.domain.OrderProductRepository;
 import com.tdd.ecommerce.order.domain.OrderRepository;
 import com.tdd.ecommerce.order.domain.Order;
 import com.tdd.ecommerce.order.domain.OrderProduct;
+import com.tdd.ecommerce.order.presentation.dto.OrderProductRequest;
 import com.tdd.ecommerce.product.domain.ProductInventoryRepository;
 import com.tdd.ecommerce.product.domain.ProductRepository;
 import com.tdd.ecommerce.product.domain.entity.Product;
@@ -18,12 +19,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 
 import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+@RecordApplicationEvents //발행한 이벤트들이 기록에 남음. > 어딘가 기록해서 가지고있는애가있을거임. >ApplicationEvents객체
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -40,7 +45,8 @@ public class OrderIntegrationTest {
     @Autowired
     private OrderRepository orderRepository;
 
-
+    @Autowired
+    private ApplicationEvents applicationEvents;
 
     private Long customerId;
     private Long productId;
@@ -50,7 +56,6 @@ public class OrderIntegrationTest {
 
     @BeforeEach
     public void setUp() {
-
         Customer customer = new Customer(null, 100000L, 0L);
         customerId = customerRepository.save(customer).getCustomerId();
 
@@ -60,6 +65,8 @@ public class OrderIntegrationTest {
         ProductInventory inventory = new ProductInventory(inventoryId, productId, 30L);
 
         inventoryId = productInventoryRepository.save(inventory).getId();
+
+        applicationEvents.clear(); //트랜잭션이 롤백되는건
     }
 
     @Test
@@ -67,8 +74,8 @@ public class OrderIntegrationTest {
     @DisplayName("🟢1L상품의 주문을 성공하면 반환되는 리스트의 상품코드는 1L, 주문수량은 1L이다.")
     void createOrder_SUCCESS(){
         Long orderId = saveOrder(customerId).getOrderId();
-        OrderProduct orderProduct = new OrderProduct(null, orderId, productId, 1L, 10000L);
-        List<OrderProduct> orders = Collections.singletonList(orderProduct);
+        OrderProductRequest orderProduct = new OrderProductRequest(productId, 1L);
+        List<OrderProductRequest> orders = Collections.singletonList(orderProduct);
 
         List<OrderServiceResponse> response = sut.createOrder(customerId, orders);
 
@@ -76,6 +83,8 @@ public class OrderIntegrationTest {
         assertThat(response).isNotEmpty();
         assertThat(response.getFirst().getOrderProducts().getFirst().getProductId()).isEqualTo(productId);
         assertThat(response.getFirst().getOrderProducts().getFirst().getAmount()).isEqualTo(1L);
+        List<OrderEvent> events = applicationEvents.stream(OrderEvent.class).toList();
+        assertThat(events).hasSize(1);
     }
 
     @Test
@@ -95,4 +104,5 @@ public class OrderIntegrationTest {
         Order order = new Order(null, customerId);
         return orderRepository.save(order);
     }
+
 }
