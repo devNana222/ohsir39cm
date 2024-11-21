@@ -31,7 +31,7 @@ public class OrderPaidEventListenerImpl implements OrderPaidEventListenerInterfa
             log.error(e.getMessage());
             Outbox outbox = outboxRepository.findByEventId(orderId);
 
-            outbox.setStatus(OrderOutboxStatus.FAILED.toString());
+            outbox.setStatus(OrderOutboxStatus.INIT.toString());
             outboxRepository.save(outbox);
         }
     }
