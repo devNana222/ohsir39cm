@@ -2,7 +2,6 @@ package com.tdd.ecommerce.order.application;
 
 import com.tdd.ecommerce.cart.domain.CartRepository;
 import com.tdd.ecommerce.cart.domain.entity.Cart;
-import com.tdd.ecommerce.common.domain.Outbox;
 import com.tdd.ecommerce.common.domain.OutboxRepository;
 import com.tdd.ecommerce.common.exception.BusinessException;
 import com.tdd.ecommerce.common.exception.ECommerceExceptions;
@@ -82,6 +81,7 @@ public class OrderService {
         Customer customer;
         Order newOrder;
 
+
         List<OrderInfo> orderInfoList = new ArrayList<>();
         try {
             Long totalRequiredBalance = getRequiredBalance(orders);
@@ -108,10 +108,8 @@ public class OrderService {
                 orderInfoList.add(orderInfo);
             }
             //outbox table 에 이벤트 저장한 다음에 이벤트 발행해야함.
-            Outbox outbox = new Outbox(null, newOrder.getOrderId(), "ORDER", "INIT");
 
-            outboxRepository.save(outbox);
-            eventPublisher.publishEvent(new OrderEvent(this, newOrder.getOrderId()));
+            eventPublisher.publishEvent(new OrderEvent(this, newOrder.getOrderId(), orders));
         }
         catch(Exception e){
             log.warn("Order creation failed", e);

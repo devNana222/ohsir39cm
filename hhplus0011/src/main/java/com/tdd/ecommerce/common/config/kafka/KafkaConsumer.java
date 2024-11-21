@@ -23,8 +23,7 @@ public class KafkaConsumer {
         String value = consumerRecord.value();
         System.out.println("value = " + value);
 
-        Outbox outbox = outboxRepository.findByEventId(Long.parseLong(value));
-
+        Outbox outbox = outboxRepository.findByEventId(Long.parseLong(key));
 
         if (outbox == null) {
             log.warn("outbox is null");
