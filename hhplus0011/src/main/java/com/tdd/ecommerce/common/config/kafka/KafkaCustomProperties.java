@@ -1,4 +1,4 @@
-package com.tdd.ecommerce.common.kafka;
+package com.tdd.ecommerce.common.config.kafka;
 
 
 import lombok.Getter;

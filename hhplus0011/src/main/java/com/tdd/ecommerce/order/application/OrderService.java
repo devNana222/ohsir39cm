@@ -2,6 +2,7 @@ package com.tdd.ecommerce.order.application;
 
 import com.tdd.ecommerce.cart.domain.CartRepository;
 import com.tdd.ecommerce.cart.domain.entity.Cart;
+import com.tdd.ecommerce.common.domain.OutboxRepository;
 import com.tdd.ecommerce.common.exception.BusinessException;
 import com.tdd.ecommerce.common.exception.ECommerceExceptions;
 import com.tdd.ecommerce.customer.domain.Customer;
@@ -40,6 +41,7 @@ public class OrderService {
     private final OrderProductRepository orderProductRepository;
     private final CartRepository cartRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final OutboxRepository  outboxRepository;
 
     public List<OrderServiceResponse> getOrderList(Long orderId){
         Optional<Order> order = orderRepository.findById(orderId);
@@ -79,6 +81,7 @@ public class OrderService {
         Customer customer;
         Order newOrder;
 
+
         List<OrderInfo> orderInfoList = new ArrayList<>();
         try {
             Long totalRequiredBalance = getRequiredBalance(orders);
@@ -104,8 +107,9 @@ public class OrderService {
 
                 orderInfoList.add(orderInfo);
             }
-//outbox table 에 이벤트 저장한 다음에 이벤트 발행해야함.
-            eventPublisher.publishEvent(new OrderEvent(this, orders));
+            //outbox table 에 이벤트 저장한 다음에 이벤트 발행해야함.
+
+            eventPublisher.publishEvent(new OrderEvent(this, newOrder.getOrderId(), orders));
         }
         catch(Exception e){
             log.warn("Order creation failed", e);
@@ -123,10 +127,6 @@ public class OrderService {
         }
 
         return result;
-    }
-
-    private boolean isEnoughBalance(Long customerId, Long requiredBalance){
-        return customerRepository.findById(customerId).orElseThrow().getBalance() >= requiredBalance;
     }
 
     protected boolean isEnoughStock(Long productId, Long requiredStock) {
