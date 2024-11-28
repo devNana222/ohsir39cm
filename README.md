@@ -59,5 +59,5 @@
 <summary>접기/펼치기</summary>
 
    ## 해당 프로젝트에서 적용할 수 있는 "장애대응"에 대해 조사한 내용입니다.<br/> 
-1. <a href='https://velog.io/@dev_nana/%EA%B0%84%EB%8B%A8%ED%95%9C-E-Commerce-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EB%A5%BC-%ED%86%B5%ED%95%B4-%EC%95%8C%EC%95%84%EB%B3%B4%EB%8A%94-%ED%8A%B8%EB%9E%9C%EC%9E%AD%EC%85%98-%EB%B2%94%EC%9C%84%EC%97%90-%EB%8C%80%ED%95%9C-%EC%9D%B4%ED%95%B4'>장애 대응</a>
+*  <a href='https://velog.io/@dev_nana/간단한-E-Commerce-프로젝트를-통해-알아보는-장애대응'>장애 대응</a>
 </details>
